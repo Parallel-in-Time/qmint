@@ -4,4 +4,4 @@
 Spectral Deferred Corrections (SDC), Runge-Kutta methods (RMK), or `qmat` features in general.
 
 > [!NOTE]
-> This repository is currently in construction ... 🛠️
+> This repository is currently under construction ... 🛠️

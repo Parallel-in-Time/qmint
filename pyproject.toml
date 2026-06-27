@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qmint"
+version = "0.0.1"
+description = "Playing with different flavors of time-integration using qmat"
+dependencies = [
+    "qmat",
+    "numpy",
+    "scipy",
+    "matplotlib"
+]
+requires-python = ">=3.9"
+maintainers = [
+    {name = "Thibaut Lunet", email = "thibaut.lunet@tuhh.de"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+
+    "Topic :: Scientific/Engineering :: Mathematics",
+
+    "License :: OSI Approved :: BSD License",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.optional-dependencies]
+test = [
+    "flake8",
+    "pytest<9",
+    "pytest-notebook",
+    "pytest-timeout",
+    "coverage[toml]",
+    "notebook",
+    "jupyter",
+    "nbconvert",
+]
+
+[project.urls]
+Homepage = "https://github.com/Parallel-in-Time/qmint"
+Documentation = "https://qmint.readthedocs.io/"
+Tracker = "https://github.com/Parallel-in-Time/qmint/issues"
+
+[tool.pytest.ini_options]
+nb_diff_ignore = [
+    "/metadata/",
+    "/cells/*/outputs/*/data/image/png"]
+pythonpath = [
+    "."
+]
+
+[tool.coverage.run]
+relative_files = true
+concurrency = ['multiprocessing']
+source = ['qmint']
+omit = [
+    '*/qmint/playgrounds/*'
+]
+
+[tool.coverage.report]
+skip_empty = true
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Enable the standard pragma
+    'pragma: no cover',
+
+    # Don't complain if tests don't hit defensive assertion code:
+    'raise',
+    'except',
+
+    # Ignore footer of scripts
+    'if __name__ == "__main__":',
+    ]

@@ -11,7 +11,7 @@ import qmint.utils as utils
 
 class Dahlquist():
     r"""
-    Solver for the classical Dahlquist equation
+    Time-stepper for the vectorized Dahlquist equation
 
     .. math::
 

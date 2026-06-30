@@ -1,0 +1,50 @@
+# Notebook Tutorials
+
+📜 *Extensive user guide, mostly based on step-by-step tutorials ...*
+
+All tutorials are written in jupyter notebooks, that can be :
+
+- read using the [online documentation](https://qmint.readthedocs.io/en/latest/notebooks.html)
+- downloaded from the [notebook folder](https://github.com/Parallel-in-Time/qmint/tree/main/docs/notebooks) and played with
+
+📋 **Table of content**
+
+1. **Basic usage tutorials** : how to generate and use basic $Q$-coefficients and $Q_\Delta$ approximations, through a step-by-step tutorial going from generic Runge-Kutta methods to SDC for simple problems.
+2. **Advanced tutorials** : additional features or `qmat` to go deeper into time-integration (Node-to-Node formulation, use for non-linear problems, $\phi$-SDC, ...)
+3. **Components usage** : how to use the main utility modules, like {py:mod}`qmat.lagrange`, etc ...
+
+
+```{eval-rst}
+Base usage tutorial
+===================
+
+📜 *From Butcher Tables to Spectral Deferred Corrections ...*
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+
+    notebooks/0*
+
+Advanced tutorials
+==================
+
+📜 *Going deeper into advanced time-integration topics ...*
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+
+    notebooks/1*
+
+Components usage
+================
+
+📜 *How to use the utility modules ...*
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+
+    notebooks/2*
+```

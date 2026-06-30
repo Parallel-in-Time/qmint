@@ -3,7 +3,7 @@
 """
 Script investigating IMEX stability for RK methods
 
-.. literalinclude:: /../qmat/playgrounds/tibo/imexStabilityRK.py
+.. literalinclude:: /../qmint/playgrounds/tibo/imexStabilityRK.py
    :language: python
    :linenos:
    :lines: 11-

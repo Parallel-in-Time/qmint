@@ -3,7 +3,7 @@
 """
 Compute accuracy and stability of a monolitic SDC scheme
 
-.. literalinclude:: /../qmat/playgrounds/tibo/stability.py
+.. literalinclude:: /../qmint/playgrounds/tibo/stability.py
    :language: python
    :linenos:
    :lines: 11-

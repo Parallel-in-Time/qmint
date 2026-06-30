@@ -1,0 +1,10 @@
+setuptools
+sphinx
+sphinx-autoapi
+nbsphinx
+pygments
+sphinx_rtd_theme
+sphinx-gallery < 0.11.0
+sphinxcontrib-video
+myst-parser
+sphinx-favicon

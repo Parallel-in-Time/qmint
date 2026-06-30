@@ -4,7 +4,7 @@
 Make use of the generic :class:`CoeffSolver` of `qmat` to solve the Lorenz equations
 using a RK method or Spectral Deferred Correction.
 
-.. literalinclude:: /../qmat/playgrounds/tibo/lorenz.py
+.. literalinclude:: /../qmint/playgrounds/tibo/lorenz.py
    :language: python
    :linenos:
    :lines: 12-

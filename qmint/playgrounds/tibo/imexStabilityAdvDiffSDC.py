@@ -3,7 +3,7 @@
 """
 Script investigating IMEX stability for advection-diffusion solved with SDC
 
-.. literalinclude:: /../qmat/playgrounds/tibo/imexStabilityAdvDiffSDC.py
+.. literalinclude:: /../qmint/playgrounds/tibo/imexStabilityAdvDiffSDC.py
    :language: python
    :linenos:
    :lines: 11-

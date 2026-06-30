@@ -12,7 +12,7 @@ html_theme.sidebar_secondary.remove: true
 Spectral Deferred Corrections (SDC), Runge-Kutta methods (RMK), or `qmat` features in general.
 
 
-::::{grid} 1 2 3 4
+::::{grid} 1 2 3 3
 :gutter: 3
 
 :::{grid-item-card}

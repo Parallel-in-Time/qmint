@@ -1,0 +1,4 @@
+/* Hides the prompt numbers for both inputs and outputs */
+.nbinput .prompt, .nboutput .prompt {
+    display: none;
+}

@@ -115,7 +115,8 @@ language = 'en'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'default'
+pygments_style = "solarized-light"
+pygments_dark_style = "solarized-dark"
 
 copybutton_exclude = ".linenos, .gp"
 copybutton_selector = ":not(.prompt) > div.highlight pre"

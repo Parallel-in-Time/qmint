@@ -28,35 +28,35 @@ Chosen merge strategy is to squash commits $\Rightarrow$ you don't have to care 
 
 > 🔔 Once your PR is accepted, please delete this branch from your fork and synchronize your `main` branch. When creating a new development branch later, ensure that you start from an up-to-date `main` branch of your fork.
 
-In case you are interested in contributing but don't have any idea on what, checkout out current [development roadmap 🎯](./devdoc/roadmap.md) and [project proposals 🎓](https://github.com/Parallel-in-Time/qmat/discussions/categories/project-proposals)
+In case you are interested in contributing but don't have any idea on what, checkout out current [development roadmap 🎯](./contrib/roadmap.md) and [project proposals 🎓](https://github.com/Parallel-in-Time/qmint/discussions/categories/project-proposals)
 
 ## Base recipes
 
 _Some memos on how to develop this package ..._
 
-- [Code structure](./devdoc/structure.md)
-- [Add a Runge-Kutta scheme](./devdoc/addRK.md)
-- [Add a playground](./devdoc/addPlayground.md)
-- [Add a differential operator](./devdoc/addDiffOp.md)
-- [Add a $\phi$-based time-integrator](./devdoc/addPhiIntegrator.md)
-- [Testing your changes](./devdoc/testing.md)
-- [Update this documentation](./devdoc/updateDoc.md)
-- [Version update pipeline](./devdoc/versionUpdate.md)
+- [Code structure](./contrib/structure.md)
+- [Add a Runge-Kutta scheme](./contrib/addRK.md)
+- [Add a playground](./contrib/addPlayground.md)
+- [Add a differential operator](./contrib/addDiffOp.md)
+- [Add a $\phi$-based time-integrator](./contrib/addPhiIntegrator.md)
+- [Testing your changes](./contrib/testing.md)
+- [Update this documentation](./contrib/updateDoc.md)
+- [Version update pipeline](./contrib/versionUpdate.md)
 
 ```{eval-rst}
 .. toctree::
     :maxdepth: 1
     :hidden:
 
-    devdoc/structure
-    devdoc/addRK
-    devdoc/addPlayground
-    devdoc/addDiffOp
-    devdoc/addPhiIntegrator
-    devdoc/testing
-    devdoc/updateDoc
-    devdoc/versionUpdate
-    devdoc/roadmap
+    contrib/structure
+    contrib/addRK
+    contrib/addPlayground
+    contrib/addDiffOp
+    contrib/addPhiIntegrator
+    contrib/testing
+    contrib/updateDoc
+    contrib/versionUpdate
+    contrib/roadmap
 ```
 
 ## Miscellaneous

@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-Submodule implementing generic solvers that can be used
-to solve (non-linear) ODE systems of the form :
+Use `qmat` to implement time-stepper for (non-linear) ODE systems of the form :
 
 .. math::
 
     \frac{du}{dt} = f(u,t), \quad u(0) = u_0.
 
-All those solvers are based on a :class:`DiffOp` base class,
+All time-steppers are based on a :class:`DiffOp` base class,
 implementing :
 
 - the :math:`f(u,t)` evaluations,
@@ -36,7 +35,7 @@ And usually, the vector containing the node solutions
 where :math:`{\bf f} = [f(u_1, t_1),\dots,f(u_M,t_M)]^T` is the vector
 with the evaluations of each node solutions
 and :math:`{\bf u}_0` is a vector containing :math:`u_0` in each entry.
-The :class:`CoeffSolver` allows to solve any ODE using this coefficient-based
+The :class:`CoeffStepper` allows to solve any ODE using this coefficient-based
 approach, either directly if the :math:`Q` matrix is lower triangular,
 or iteratively with SDC-based sweeps if :math:`Q` is a dense matrix.
 

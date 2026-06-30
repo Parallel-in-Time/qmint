@@ -8,39 +8,52 @@ html_theme.sidebar_secondary.remove: true
 
 # QMint Playground
 
-`qmint` is a companion python package of [`qmat`](https://github.com/parallel-in-Time/qmat), to play with many flavors of time-integration methods, like
-Spectral Deferred Corrections (SDC), Runge-Kutta methods (RMK), or `qmat` features in general.
+Using [`qmat`](https://github.com/parallel-in-Time/qmat) to implement & play with the many flavors of time-integration (Spectral Deferred Correction, Runge-Kutta, ...)
 
 
 ::::{grid} 1 2 3 3
 :gutter: 3
 
 :::{grid-item-card}
-:link: cards-clickable
-{fab}`bootstrap;pst-color-primary` Built with Bootstrap
+:link: basics.html
+{fas}`spinner;sd-text-primary` Basic usage
 ^^^
-Blablabla
+_From Butcher Tables to Spectral Deferred Correction methods ... basic usage examples of `qmat`_
 :::
 
 :::{grid-item-card}
-:link: cards-clickable
-{fas}`spinner;sd-text-primary` Responsive Design
+:link: advanced.html
+{fas}`spinner;sd-text-primary` Advanced tutorials
 ^^^
-Blablabla
+_Going deeper into advanced time-integration topics with `qmat` and `qmint`_
 :::
 
 :::{grid-item-card}
-:link: cards-clickable
-{fas}`bolt;pst-color-primary` Responsive Design
+:link: features.html
+{fas}`bolt;pst-color-primary` Side-features
 ^^^
-Blablabla
+_Because `qmat` can do way more than just time-integration thanks to its core features_
 :::
 
 :::{grid-item-card}
-:link: cards-clickable
-{fas}`bolt;pst-color-primary` Responsive Design
+:link: community.html
+{fas}`bolt;pst-color-primary` Community playgrounds
 ^^^
-Blablabla
+_Shared experiments with `qmat` contributed by the community_
+:::
+
+:::{grid-item-card}
+:link: api/qmint/index.html
+{fas}`bolt;pst-color-primary` API reference
+^^^
+Full documentation of `qmint`
+:::
+
+:::{grid-item-card}
+:link: contributing.html
+{fas}`bolt;pst-color-primary` Contributing
+^^^
+How can you contribute to the whole `qmat` eco-system
 :::
 
 ::::
@@ -51,8 +64,10 @@ Blablabla
 ```{toctree}
 :maxdepth: 2
 
-installation
-notebooks
-contributing
+basics
+advanced
+features
+community
 API reference <api/qmint/index>
+contributing
 ```

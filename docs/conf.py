@@ -81,7 +81,7 @@ autoapi_python_class_content = 'both'
 autoapi_add_toctree_entry = False
 autoapi_ignore = [
     '*scripts*'
-    '*playgrounds*'
+    '*qplay*'
     ]
 autoapi_root = "api"
 
@@ -133,6 +133,7 @@ html_theme_options = {
     },
     "use_edit_page_button": True,
     'globaltoc_maxdepth': 2,
+    "primary_sidebar_end": ["sidebar-ethical-ads"],
 }
 
 html_context = {

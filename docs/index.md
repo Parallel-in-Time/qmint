@@ -8,61 +8,65 @@ html_theme.sidebar_secondary.remove: true
 
 # QMint Playground
 
-Using [`qmat`](https://github.com/parallel-in-Time/qmat) to implement & play with the many flavors of time-integration (Spectral Deferred Correction, Runge-Kutta, ...)
+> 📣 Using [`qmat`](https://qmat.readthedocs.io) to implement & play with the **many flavors of time-integration** ...
 
+- Runge-Kutta methods,
+- Spectral Deferred Correction,
+- Semi-Lagrangian approach, Multi-step schemes, ...
+
+This website centralize tutorials and numerical experiments, from _academical learning_ to _advanced research_.
 
 ::::{grid} 1 2 3 3
 :gutter: 3
 
 :::{grid-item-card}
 :link: basics.html
-{fas}`spinner;sd-text-primary` Basic usage
+{fas}`book-open;sd-text-primary` Basic usage
 ^^^
-_From Butcher Tables to Spectral Deferred Correction methods ... basic usage examples of `qmat`_
+_Using `qmat` to generate Butcher tables and SDC coefficients_
 :::
 
 :::{grid-item-card}
 :link: advanced.html
-{fas}`spinner;sd-text-primary` Advanced tutorials
+{fas}`gear;sd-text-primary` Advanced tutorials
 ^^^
-_Going deeper into advanced time-integration topics with `qmat` and `qmint`_
+_Going deeper into time-integration topics with `qmat` and `qmint`_
 :::
 
 :::{grid-item-card}
 :link: features.html
-{fas}`bolt;pst-color-primary` Side-features
+{fas}`screwdriver-wrench;pst-color-primary` Side-features
 ^^^
-_Because `qmat` can do way more than just time-integration thanks to its core features_
+_Additional core features of `qmat` : interpolation, derivation, ..._
 :::
 
 :::{grid-item-card}
 :link: community.html
-{fas}`bolt;pst-color-primary` Community playgrounds
+{fas}`flask;pst-color-primary` Community playgrounds
 ^^^
 _Shared experiments with `qmat` contributed by the community_
 :::
 
 :::{grid-item-card}
 :link: api/qmint/index.html
-{fas}`bolt;pst-color-primary` API reference
+{fas}`scroll;pst-color-primary` API reference
 ^^^
-Full documentation of `qmint`
+_Full documentation of the `qmint` companion package_
 :::
 
 :::{grid-item-card}
 :link: contributing.html
 {fas}`bolt;pst-color-primary` Contributing
 ^^^
-How can you contribute to the whole `qmat` eco-system
+_How can you contribute to the whole `qmat` eco-system_
 :::
 
 ::::
 
 
-## Doc Contents
-
 ```{toctree}
 :maxdepth: 2
+:hidden:
 
 basics
 advanced

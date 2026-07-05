@@ -9,6 +9,11 @@ p {
     display: none;
 }
 
+div.nbinput.container div.input_area div.highlight pre,
+div.nboutput.container div.output_area div.highlight pre {
+    line-height: 1.8;
+}
+
 .nboutput .output_area {
     font-weight: bold;
     color: #8a8a8a;

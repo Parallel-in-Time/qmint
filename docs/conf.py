@@ -80,8 +80,7 @@ autoapi_options = [
 autoapi_python_class_content = 'both'
 autoapi_add_toctree_entry = False
 autoapi_ignore = [
-    '*scripts*'
-    '*qplay*'
+    '*/qmint/play/*'
     ]
 autoapi_root = "api"
 

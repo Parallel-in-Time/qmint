@@ -9,7 +9,7 @@ pip install qmat
 ```
 
 `qmint` is an prototyping package implementing different kind of IVP solvers, that can be used for learning or experiments.
-It has additional dependencies compared to `qmat` ([`matplotlib`](https://matplotlib.org), ...) and can be installed from [`pypi`](https://pypi.org/) using :
+It has additional dependencies compared to `qmat` (_e.g_ [`matplotlib`](https://matplotlib.org), etc ...) and can be installed from [`pypi`](https://pypi.org/) using :
 
 ```bash
 pip install qmint
@@ -20,7 +20,8 @@ pip install qmint
 
 ## Install using conda
 
-Currently, no version is distributed on conda-forge. However using `pip` from `conda` will install `qmat`/`qmint` in your conda environment.
+Currently, no version is distributed on conda-forge.
+However using `pip` from `conda` will install `qmat`/`qmint` in your conda environment.
 
 If you are using a `environment.yml` file with conda, then you can add it as a dependency like this $:$
 

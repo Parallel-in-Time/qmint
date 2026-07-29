@@ -63,7 +63,7 @@ relative_files = true
 concurrency = ['multiprocessing']
 source = ['qmint']
 omit = [
-    '*/qmint/playgrounds/*'
+    '*/qmint/play/*'
 ]
 
 [tool.coverage.report]

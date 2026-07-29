@@ -8,13 +8,13 @@ html_theme.sidebar_secondary.remove: true
 
 # QMint Playground
 
-> 📣 Using [`qmat`](https://qmat.readthedocs.io) to implement & play with the **many flavors of time-integration** ...
+📜 How to use [`qmat`](https://qmat.readthedocs.io) to implement and play with the **many flavors of time-integration** ...
 
 - Runge-Kutta methods,
 - Spectral Deferred Correction,
 - Semi-Lagrangian approach, Multi-step schemes, ...
 
-This website centralize tutorials and numerical experiments, from _academical learning_ to _advanced research_.
+This project gathers tutorials and numerical experiments for **learning** and **research** in time-integration methods.
 
 ::::{grid} 1 2 3 3
 :gutter: 3
@@ -58,7 +58,7 @@ _Full documentation of the `qmint` companion package_
 :link: contributing.html
 {fas}`bolt;pst-color-primary` Contributing
 ^^^
-_How can you contribute to the whole `qmat` eco-system_
+_How to contribute to `qmint` playgrounds and codebase_
 :::
 
 ::::

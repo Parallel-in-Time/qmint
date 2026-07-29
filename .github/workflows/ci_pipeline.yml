@@ -41,7 +41,7 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  test-tutorials:
+  test-notebooks:
     runs-on: ubuntu-latest
 
     steps:

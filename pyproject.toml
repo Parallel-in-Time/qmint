@@ -43,6 +43,18 @@ test = [
     "jupyter",
     "nbconvert",
 ]
+docs = [
+    "setuptools >= 18.0",
+    "sphinx",
+    "sphinx-autoapi",
+    "nbsphinx",
+    "sphinx-design",
+    "sphinx-copybutton",
+    "sphinx-favicon",
+    "pygments",
+    "pydata-sphinx-theme",
+    "myst-parser",
+]
 
 [project.urls]
 Homepage = "https://github.com/Parallel-in-Time/qmint"

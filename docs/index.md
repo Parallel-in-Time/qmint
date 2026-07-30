@@ -8,13 +8,23 @@ html_theme.sidebar_secondary.remove: true
 
 # QMint Playground
 
+[![PyPI - Package](https://img.shields.io/pypi/v/qmint?logo=python)](https://pypi.org/project/qmint)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/qmint?logo=pypi&cacheSeconds=86400)](https://pypistats.org/packages/qmint)
+<a href="https://github.com/Parallel-in-Time/qmint">
+    <img alt="Last Commit" src="https://img.shields.io/github/last-commit/parallel-in-time/qmint/main?logo=github" />
+</a>
+<a href="https://github.com/Parallel-in-Time/qmint/actions/workflows/ci_pipeline.yml">
+    <img alt="CI pipeline" src="https://github.com/Parallel-in-Time/qmint/actions/workflows/ci_pipeline.yml/badge.svg">
+</a>
+<a href="https://codecov.io/gh/Parallel-in-Time/qmint">
+    <img alt="Codecov" src="https://codecov.io/gh/Parallel-in-Time/qmint/graph/badge.svg?token=8R927FGCKG">
+</a>
+
 📜 How to use [`qmat`](https://qmat.readthedocs.io) to implement and play with the **many flavors of time-integration** ...
 
 - Runge-Kutta methods,
 - Spectral Deferred Correction,
 - Semi-Lagrangian approach, Multi-step schemes, ...
-
-This project gathers tutorials and numerical experiments for **learning** and **research** in time-integration methods.
 
 ::::{grid} 1 2 3 3
 :gutter: 3

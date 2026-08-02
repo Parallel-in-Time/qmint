@@ -2,7 +2,7 @@
 
 📜 _Additional time schemes can be added using the [$\phi$ formulation](../advanced/4_phiIntegrator.ipynb)_
 _to test other variants of $Q_\Delta$-coefficients free Spectral Deferred Correction._
-_For that, you can implement a new {py:mod}`PhiSolver <qmint.solvers.generic.PhiSolver>` class in the {py:mod}`qmat.solvers.generic.integrators` module_.
+_For that, you can implement a new {py:mod}`PhiSolver <qmint.steppers.phi.PhiSolver>` class in the {py:mod}`qmint.steppers.phi` subpackage_.
 
 Add your class at the end of the `qmat.solvers.generic.integrators.py` module using the following template :
 

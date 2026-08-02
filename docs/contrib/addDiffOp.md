@@ -1,8 +1,8 @@
 # Add a differential operator
 
-📜 _Solvers implemented in {py:mod}`qmat.solvers.generic` can be used_
-_with other {py:class}`DiffOp <qmat.solvers.generic.DiffOp>` classes_
-_than those implemented in {py:mod}`qmat.solvers.generic.diffops`._
+📜 _Time-steppers implemented in {py:mod}`qmint.steppers.generic` can be used_
+_with other {py:class}`DiffOp <qmint.diffops.DiffOp>` classes_
+_than those implemented in {py:mod}`qmint.diffops`._
 
 To add a new one, implement it at the end of the `diffops.py` module,
 using the following template :
@@ -58,7 +58,7 @@ u - \alpha f(u, t) = rhs
 $$
 
 for any given $\alpha, t, rhs$.
-It relies on generic non-linear root-finding solvers, namely `scipy.optimize.fsolve` for small problems 
+It relies on generic non-linear root-finding solvers, namely `scipy.optimize.fsolve` for small problems
 and `scipy.optimize.newton_krylov` for large scale problems.
 You can also implement a more efficient approach tailored to your problem like this :
 
@@ -90,6 +90,6 @@ class Yoodlidoo(DiffOp):
         out[:] = ...
 ```
 
-> 🔔 Note that `out` will be used as output for the solution, 
+> 🔔 Note that `out` will be used as output for the solution,
 > but its input value can also be used as initial guess for any
 > iterative solver you may want to use.

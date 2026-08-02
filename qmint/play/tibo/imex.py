@@ -3,8 +3,9 @@ First tentative for a dedicated IMEX solver class
 """
 import numpy as np
 
-from qmat.solvers.dahlquist import DahlquistIMEX
-from qmat.solvers.generic import DiffOp, CoeffSolver
+from qmint.steppers.dahlquist import DahlquistIMEX
+from qmint.diffops import DiffOp
+from qmint.steppers.coeff import CoeffStepper
 
 
 class DiffOpIMEX(DiffOp):
@@ -21,7 +22,7 @@ class DiffOpIMEX(DiffOp):
         raise NotImplementedError("evalF must be provided")
 
 
-class CoeffSolverIMEX(CoeffSolver):
+class CoeffSolverIMEX(CoeffStepper):
     """
     Coefficient based solver class for IMEX differential operators.
     """
@@ -37,7 +38,7 @@ class CoeffSolverIMEX(CoeffSolver):
     def evalF_EX(self, u:np.ndarray, t:float, out:np.ndarray):
         self.diffOp.evalF_EX(u, t, out)
 
-    def solve(self, QI, wI, QE, wE, uNum=None):
+    def run(self, QI, wI, QE, wE, uNum=None):
         nNodes, QI, wI, QE, wE, useWeights = DahlquistIMEX.checkCoeff(QI, wI, QE, wE)
 
         assert self.lowerTri(QI), \

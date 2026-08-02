@@ -1,6 +1,6 @@
 from typing import List
 import numpy as np
-from qmat.playgrounds.martin.diff_eqs.de_solver import DESolver
+from qmint.play.martin.diff_eqs.de_solver import DESolver
 
 
 class RKIntegration:

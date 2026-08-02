@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from qmat.playgrounds.martin.diff_eqs.dahlquist import Dahlquist
+from qmint.play.martin.diff_eqs.dahlquist import Dahlquist
 
 
 N = 500

@@ -79,9 +79,7 @@ autoapi_options = [
     ]
 autoapi_python_class_content = 'both'
 autoapi_add_toctree_entry = False
-autoapi_ignore = [
-    '*/qmint/play/*'
-    ]
+autoapi_ignore = []
 autoapi_root = "api"
 
 autoapi_keep_files = False

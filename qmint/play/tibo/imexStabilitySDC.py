@@ -3,7 +3,7 @@
 """
 Script investigating IMEX stability for SDC methods
 
-.. literalinclude:: /../qmint/playgrounds/tibo/imexStabilitySDC.py
+.. literalinclude:: /../qmint/play/tibo/imexStabilitySDC.py
    :language: python
    :linenos:
    :lines: 11-
@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from qmat.qcoeff.collocation import Collocation
 from qmat.qdelta import QDELTA_GENERATORS
 
-from qmat.solvers.dahlquist import DahlquistIMEX
+from qmint.steppers.dahlquist import DahlquistIMEX
 
 
 # Script parameters
@@ -41,7 +41,7 @@ genE = QDELTA_GENERATORS[explSweep](qGen=coll)
 
 sweeps = [k+1 for k in range(nSweeps)]
 
-uNum = problem.solveSDC(
+uNum = problem.runSDC(
     coll.Q, coll.weights if stepUpdate else None,
     genI.genCoeffs(k=sweeps), genE.genCoeffs(k=sweeps),
     nSweeps=nSweeps)
@@ -70,7 +70,7 @@ plt.tight_layout()
 
 
 def imStab(x):
-    uSDC = DahlquistIMEX([0], [x*1j]).solveSDC(
+    uSDC = DahlquistIMEX([0], [x*1j]).runSDC(
         coll.Q, coll.weights if stepUpdate else None,
         genI.genCoeffs(k=sweeps), genE.genCoeffs(k=sweeps),
         nSweeps=nSweeps)

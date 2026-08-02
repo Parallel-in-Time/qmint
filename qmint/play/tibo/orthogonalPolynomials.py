@@ -3,7 +3,7 @@
 """
 Compute and display orthogonal polynomials of any degree using `qmat`
 
-.. literalinclude:: /../qmint/playgrounds/tibo/orthogonalPolynomials.py
+.. literalinclude:: /../qmint/play/tibo/orthogonalPolynomials.py
    :language: python
    :linenos:
    :lines: 11-

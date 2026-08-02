@@ -91,7 +91,7 @@ class PhiStepper(CoeffStepper):
             Initial step time. The default is 0.
         """
         raise NotImplementedError(
-            "specialized PhiSolver must implement its evalPhi method")
+            "specialized PhiStepper must implement its evalPhi method")
 
 
     def phiSolve(self, uPrev, fEvals, out, rhs=0, t0=0):

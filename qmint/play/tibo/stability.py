@@ -3,7 +3,7 @@
 """
 Compute accuracy and stability of a monolitic SDC scheme
 
-.. literalinclude:: /../qmint/playgrounds/tibo/stability.py
+.. literalinclude:: /../qmint/play/tibo/stability.py
    :language: python
    :linenos:
    :lines: 11-
@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from qmat.qcoeff.collocation import Collocation
 from qmat.qdelta import QDELTA_GENERATORS
 
-from qmat.solvers.dahlquist import Dahlquist
+from qmint.steppers.dahlquist import Dahlquist
 
 # Script parameters
 nNodes = 4
@@ -32,7 +32,7 @@ approx = QDELTA_GENERATORS[sweepType](qGen=coll)
 
 sweeps = [k+1 for k in range(nSweeps)]
 
-uNum = problem.solveSDC(
+uNum = problem.runSDC(
     coll.Q, None, approx.genCoeffs(k=sweeps), nSweeps=nSweeps)
 
 

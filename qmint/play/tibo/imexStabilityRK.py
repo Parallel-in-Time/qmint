@@ -3,7 +3,7 @@
 """
 Script investigating IMEX stability for RK methods
 
-.. literalinclude:: /../qmint/playgrounds/tibo/imexStabilityRK.py
+.. literalinclude:: /../qmint/play/tibo/imexStabilityRK.py
    :language: python
    :linenos:
    :lines: 11-
@@ -13,7 +13,7 @@ import scipy.optimize as sco
 import matplotlib.pyplot as plt
 
 from qmat.qcoeff.butcher import RK_SCHEMES
-from qmat.solvers.dahlquist import DahlquistIMEX
+from qmint.steppers.dahlquist import DahlquistIMEX
 
 
 # Script parameters
@@ -38,7 +38,7 @@ wI = schemeI.weights if stepUpdate else None
 QE = schemeE.Q
 wE = schemeE.weights if stepUpdate else None
 
-uNum = problem.solve(QI, wI, QE, wE)
+uNum = problem.run(QI, wI, QE, wE)
 
 u1 = uNum[-1]
 stab = np.abs(u1)
@@ -64,7 +64,7 @@ plt.tight_layout()
 
 
 def imStab(x):
-    return np.abs(DahlquistIMEX([0], [x*1j]).solve(QI, wI, QE, wE)[-1]) - 1
+    return np.abs(DahlquistIMEX([0], [x*1j]).run(QI, wI, QE, wE)[-1]) - 1
 
 try:
     sol = sco.bisect(imStab, 1e-1, 1e2, xtol=1e-16)

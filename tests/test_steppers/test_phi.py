@@ -41,7 +41,7 @@ def testPhiStepper(scheme, problem, nNodes):
 @pytest.mark.parametrize("nNodes", [2, 4, 8])
 @pytest.mark.parametrize("problem", ["Lorenz", "ProtheroRobinson"])
 @pytest.mark.parametrize("scheme", EQUIVALENCES.keys())
-def testPhiSolverSDC(scheme, problem, nNodes, quadType, nSweeps):
+def testPhiStepperSDC(scheme, problem, nNodes, quadType, nSweeps):
     pParams = {}
     if problem == "ProtheroRobinson":
         pParams = {"epsilon": 0.01, "nonLinear": True}

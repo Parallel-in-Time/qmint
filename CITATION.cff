@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 
-abstract: "Use qmat to play with many flavors of time-integration methods (Runge-Kutta, Spectral Deferred Corrections, ...)"
+abstract: "Using qmat to play with many flavors of time-integration methods (Runge-Kutta, Spectral Deferred Corrections, ...)"
 authors:
   - family-names: Lunet
     given-names: Thibaut

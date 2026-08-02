@@ -1,3 +1,6 @@
 # Community playgrounds
 
-🛠️ In construction ...
+```{eval-rst}
+.. automodule:: qmint.play
+    :no-members:
+```

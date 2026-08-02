@@ -53,11 +53,11 @@ the following relation :
 where :math:`\phi` is solely defined by the chosen time-integrator.
 The system above can be solved node-by-node in a sequential approach,
 or iteratively with a SDC-based approach.
-It is implemented in the abstract :class:`PhiSolver` class,
+It is implemented in the abstract :class:`PhiStepper` class,
 that needs to be specialized by a child class implementing
 the :math:`\phi` function.
 
-    🛠️ Specialized :class:`PhiSolver` classes are implemented in the
+    🛠️ Specialized :class:`PhiStepper` classes are implemented in the
     :class:`integrators` submodule.
 """
 from qmint.diffops import DiffOp, DIFFOPS

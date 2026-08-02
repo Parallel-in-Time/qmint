@@ -17,15 +17,15 @@ Here are some generic recommendation on release-triggering events :
 
 ## Pipeline description
 
-To release a new version, one need maintainer access to the `qmat` Github project, and execute the following steps :
+To release a new version, one need maintainer access to the `qmint` Github project, and execute the following steps :
 
-1. Modify the version number in [`pyproject.toml`](https://github.com/Parallel-in-Time/qmat/blob/main/pyproject.toml)
-2. Modify the version number and the release date in [`CITATION.cff`](https://github.com/Parallel-in-Time/qmat/blob/main/CITATION.cff)
-3. (Minor & major update) update [`roadmap.md`](https://github.com/Parallel-in-Time/qmat/blob/main/docs/devdoc/roadmap.md) if not done already
-4. (Major update) update [SECURITY.md](https://github.com/Parallel-in-Time/qmat/blob/main/docs/SECURITY.md) if not done already
+1. Modify the version number in [`pyproject.toml`](https://github.com/Parallel-in-Time/qmint/blob/main/pyproject.toml)
+2. Modify the version number and the release date in [`CITATION.cff`](https://github.com/Parallel-in-Time/qmint/blob/main/CITATION.cff)
+3. (Minor & major update) update [`roadmap.md`](https://github.com/Parallel-in-Time/qmint/blob/main/docs/devdoc/roadmap.md) if not done already
+4. (Major update) update [SECURITY.md](https://github.com/Parallel-in-Time/qmint/blob/main/docs/SECURITY.md) if not done already
 5. Commit with message `XX: bump version to x.x.x` where `XX` are your initials and `x.x.x` is the new version
-6. Manually run the ["Publish to PyPI 📦"](https://github.com/Parallel-in-Time/qmat/actions/workflows/publish.yml) workflow
-7. [Draft a new release](https://github.com/Parallel-in-Time/qmat/releases/new) associated to a new tag `v*.*.*` (with `*.*.*` the new version, and the `+ Create new tag: ... on publish` button)
+6. Manually run the ["Publish to PyPI 📦"](https://github.com/Parallel-in-Time/qmint/actions/workflows/publish.yml) workflow
+7. [Draft a new release](https://github.com/Parallel-in-Time/qmint/releases/new) associated to a new tag `v*.*.*` (with `*.*.*` the new version, and the `+ Create new tag: ... on publish` button)
 8. Find a cool title for the release, and describe what is new or changed (don't forget to thanks the non-maintainers authors)
 
 And finally, click on `Publish release` 🚀

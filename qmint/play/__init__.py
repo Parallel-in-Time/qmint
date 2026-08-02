@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Folders containing different experiments performed with `qmat`.
+Folders containing different experiments performed with `qmat` & `qmint`.
 
     📣 Codes in those folders are not tested by the CI pipeline,
     but hopefully enough documented so you can play with it.

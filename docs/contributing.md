@@ -17,8 +17,8 @@ Recommended approach is to **fork this repository**, create a new branch in your
 This will automatically trigger the CI pipeline that :
 
 1. check linting with `flake8`
-2. run all the tests defined in the [`tests` folder](https://github.com/Parallel-in-Time/qmat/tree/main/tests), and upload a coverage report to [`codecov`](https://app.codecov.io/gh/Parallel-in-Time/qmat)
-3. test all the tutorials located in the [`docs/notebook` folder](https://github.com/Parallel-in-Time/qmat/tree/main/docs/notebooks)
+2. run all the tests defined in the [`tests` folder](https://github.com/Parallel-in-Time/qmint/tree/main/tests), and upload a coverage report to [`codecov`](https://app.codecov.io/gh/Parallel-in-Time/qmint)
+3. test all the notebooks located in [`docs/basics`](https://github.com/Parallel-in-Time/qmint/tree/main/docs/basics), [`docs/advanced`](https://github.com/Parallel-in-Time/qmint/tree/main/docs/advanced) and [`docs/features`](https://github.com/Parallel-in-Time/qmint/tree/main/docs/features)
 
 Current coverage is at 100%, so no untested line will be accepted 😇.
 
@@ -34,8 +34,6 @@ In case you are interested in contributing but don't have any idea on what, chec
 
 _Some memos on how to develop this package ..._
 
-- [Code structure](./contrib/structure.md)
-- [Add a Runge-Kutta scheme](./contrib/addRK.md)
 - [Add a playground](./contrib/addPlayground.md)
 - [Add a differential operator](./contrib/addDiffOp.md)
 - [Add a $\phi$-based time-integrator](./contrib/addPhiIntegrator.md)
@@ -48,8 +46,6 @@ _Some memos on how to develop this package ..._
     :maxdepth: 1
     :hidden:
 
-    contrib/structure
-    contrib/addRK
     contrib/addPlayground
     contrib/addDiffOp
     contrib/addPhiIntegrator

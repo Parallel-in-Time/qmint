@@ -1,4 +1,4 @@
-# Testing your changes
+# Test your changes
 
 📜 _After doing some changes / corrections / addition in the code, you can run all the CI tests locally before any commit or PR._
 
@@ -31,18 +31,18 @@ pip install -e .[test]     # install qmat locally and all test dependencies
 # on MAC-OS : pip install -e ".[test]"
 ```
 
-> 📣 Remember that this is the [recommended installation approach for developers](../basics/0_installation.md).
+> 📣 Remember that this is the [recommended installation approach for developers](../installation.md).
 
 ## Test local changes
 
-The first thing to do (from the root `qmat` repo) is to run :
+The first thing to do (from the root `qmint` repo) is to run :
 
 ```bash
-python -c "import qmat"
+python -c "import qmint"
 ```
 
-This will trigger the [registration mechanism](./structure) that test the code structure at import,
-and ensures that all generators are correctly implemented
+This will trigger the [registration mechanism for the DiffOp](addDiffOp.md) at import,
+and ensures that all `DiffOp` classes are correctly implemented
 (in particular, overriding of the correct methods, etc ...).
 
 Then run the full test series with :
@@ -51,30 +51,14 @@ Then run the full test series with :
 pytest -v ./tests
 ```
 
-This will check :
+This will test :
 
-- the basic generation of all registered $Q$-coefficients and $Q_\Delta$ approximations (using functions or generator objects)
-- convergence order of all registered $Q$-coefficients
-- some properties of all registered $Q_\Delta$ approximations
-- all the solvers and differential operators implemented in `qmat`
-
-💡 **Hint :**
-
-There is currently more than 6000 tests, that take around 35 seconds on a standard computer.
-So you may not want to run all of those every time you do a small modification somewhere 😅 ...
-Here are a few tricks you can use :
-
-```bash
-pytest -v -x ./tests    # interrupt test on the first encountered error
-pytest -v ./tests/test_1_nodes.py       # run only one test file
-pytest -v ./tests/test_qcoeff           # run only one folder
-pytest -v ./tests/test_1_nodes.py::testGauss            # run only one test function
-pytest -v ./tests/test_1_nodes.py::testGauss[LEGENDRE]  # run only one test function with one given configuration
-```
+- the proper behavior of all `DiffOps` classes
+- all the time-steppers implemented in `qmint`
 
 ## Check code coverage
 
-Once all test pass, you may check locally coverage by running (from the `qmat` root folder) :
+Once all test pass, you may check locally coverage by running (from the `qmint` root folder) :
 
 ```bash
 ./test.sh
@@ -88,17 +72,23 @@ This generates a html coverage report in `htmlcov/index.html` that you can read 
 
 ## Testing notebook tutorials
 
-All notebooks are located in the [notebook docs folder](../notebooks). You can first check if they can be executed properly by running :
+All notebooks are located in the
+
+- [`docs/basics` folder](../basics)
+- [`docs/advanced` folder](../advanced)
+- [`docs/features` folder](../features)
+
+You can first check if they can be executed properly by running :
 
 ```bash
-cd docs/notebooks
-./run-sh --all
+cd docs/$FOLDER
+../scripts/run-sh --all
 ```
 
 💡 To execute only one notebook, simply run _e.g_ :
 
 ```bash
-./run.sh 01_qCoeffs.ipynb
+../scripts/run-sh 2_sdc.ipynb
 ```
 
 Finally, you can test all notebooks by running :

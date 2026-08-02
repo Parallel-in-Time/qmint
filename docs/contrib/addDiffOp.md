@@ -4,11 +4,12 @@
 _with other {py:class}`DiffOp <qmint.diffops.DiffOp>` classes_
 _than those implemented in {py:mod}`qmint.diffops`._
 
-To add a new one, implement it at the end of the `diffops.py` module,
-using the following template :
+To add a new one, implement it in a module of the {py:mod}`qmint.diffops` module, using the following template :
 
 ```python
-@registerDiffOp
+from qmint.diffops import DiffOp, register
+
+@register
 class Yoodlidoo(DiffOp):
     r"""
     Base description, in particular its equation :
@@ -40,16 +41,16 @@ class Yoodlidoo(DiffOp):
         out[:] = ... # put the result into out
 ```
 
-And that's all ! The `registerDiffOp` operator will automatically
+And that's all ! The `register` decorator will automatically
 - add your class in the `DIFFOPS` dictionary to make it generically available
 - check if your class properly overrides the `evalF` function (import error if not)
 - add your class to the [CI tests](./testing.md)
 
 > 📣 Per default, all `DiffOp` classes must be instantiable with default parameters
-> in order to run the tests (see the {py:func}`DiffOp.test <qmat.solvers.generic.DiffOp.test>`
+> in order to run the tests (see the {py:func}`DiffOp.test <qmint.diffops.DiffOp.test>`
 > class method). But you can change that by overriding the `test` class method and put your own
 > preset parameters for the test (checkout the
-> {py:func}`ProtheroRobinson <qmat.solvers.generic.diffops.ProtheroRobinson>` class for an example).
+> {py:func}`ProtheroRobinson <qmint.diffops.odes.ProtheroRobinson>` class for an example).
 
 Finally, the `DiffOp` class implements a default `fSolve` method, that solves :
 
@@ -63,7 +64,7 @@ and `scipy.optimize.newton_krylov` for large scale problems.
 You can also implement a more efficient approach tailored to your problem like this :
 
 ```python
-@registerDiffOp
+@register
 class Yoodlidoo(DiffOp):
     # ...
 

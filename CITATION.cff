@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+
+abstract: "Use qmat to play with many flavors of time-integration methods (Runge-Kutta, Spectral Deferred Corrections, ...)"
+authors:
+  - family-names: Lunet
+    given-names: Thibaut
+    orcid: https://orcid.org/0000-0003-1745-0780
+    affiliation: "Hamburg University of Technology, Institute of Mathematics, 21073 Hamburg, Germany"
+  - family-names: Schreiber
+    given-names: Martin
+    orcid: https://orcid.org/0000-0002-2390-6716
+    affiliation: "University Grenoble Alpes, Laboratory Jean Kuntzmann, 38400 Saint-Martin-d'Hères, France"
+
+version: 0.0.1
+doi: ...
+date-released: 2026-08-02
+keywords:
+  - "time integration"
+  - "spectral deferred corrections"
+  - collocation
+  - "Runge-Kutta"
+license: BSD-2-Clause
+repository-code: https://github.com/Parallel-in-Time/qmint
+title: "Parallel-in-Time/qmint"

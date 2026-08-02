@@ -111,9 +111,6 @@ language = 'en'
 # This pattern also affects html_static_path and html_extra_path .
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-# The name of the Pygments (syntax highlighting) style to use.
-
-
 copybutton_exclude = ".linenos, .gp"
 copybutton_selector = ":not(.prompt) > div.highlight pre"
 
@@ -130,8 +127,6 @@ html_theme_options = {
     "use_edit_page_button": True,
     'globaltoc_maxdepth': 2,
     "primary_sidebar_end": ["sidebar-ethical-ads"],
-    "pygments_light_style": "solarized-light",
-    "pygments_dark_style": "solarized-dark",
 }
 
 html_context = {

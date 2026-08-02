@@ -25,22 +25,24 @@ diffOp = Lorenz()
 solver = CoeffStepper(diffOp, tEnd=tEnd, nSteps=nSteps)
 
 nodes, weights, Q = genQCoeffs("RK4")
-with Timer("RK solve", scale=nSteps, descr="tWall/step"):
-    uRK = solver.run(Q, weights)
 
-coll = Collocation(nNodes=2, nodeType="LEGENDRE", quadType="RADAU-RIGHT")
-gen = QDELTA_GENERATORS["FE"](qGen=coll)
-QDelta = gen.getQDelta()
-with Timer("SDC solve", scale=nSteps, descr="tWall/step"):
-    uSDC = solver.runSDC(4, coll.Q, coll.weights, QDelta)
+if __name__ == "__main__":
+    with Timer("RK solve", scale=nSteps, descr="tWall/step"):
+        uRK = solver.run(Q, weights)
 
-plt.figure("Solution")
-times = np.linspace(0, tEnd, nSteps+1)
-for i, v in enumerate(["x", "y", "z"]):
-    p = plt.plot(times, uRK[:, i], label=f"{v} RK")
-    plt.plot(times, uSDC[:, i], "--", c=p[0].get_color(), label=f"{v} SDC")
-plt.legend()
-plt.xlabel("time")
-plt.ylabel("trajectory")
-plt.gcf().set_size_inches(11, 6)
-plt.tight_layout()
+    coll = Collocation(nNodes=2, nodeType="LEGENDRE", quadType="RADAU-RIGHT")
+    gen = QDELTA_GENERATORS["FE"](qGen=coll)
+    QDelta = gen.getQDelta()
+    with Timer("SDC solve", scale=nSteps, descr="tWall/step"):
+        uSDC = solver.runSDC(4, coll.Q, coll.weights, QDelta)
+
+    plt.figure("Solution")
+    times = np.linspace(0, tEnd, nSteps+1)
+    for i, v in enumerate(["x", "y", "z"]):
+        p = plt.plot(times, uRK[:, i], label=f"{v} RK")
+        plt.plot(times, uSDC[:, i], "--", c=p[0].get_color(), label=f"{v} SDC")
+    plt.legend()
+    plt.xlabel("time")
+    plt.ylabel("trajectory")
+    plt.gcf().set_size_inches(11, 6)
+    plt.tight_layout()

@@ -21,7 +21,7 @@ u0 = burgers.initial_u0("sine")
 
 burgers.run_tests()
 
-if 1:
+if __name__ == "__main__":
     nt: int = 1000
     dt: float = T / nt
 

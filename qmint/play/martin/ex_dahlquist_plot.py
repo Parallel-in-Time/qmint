@@ -11,8 +11,8 @@ dahlquist: Dahlquist = Dahlquist(lam1=20.0j, lam2=1.0j)
 
 u_eval = np.array([dahlquist.int_f(u0, dt=_) for _ in t])
 
-
-plt.plot(t, np.real(u_eval), label="Re(u)")
-plt.plot(t, np.imag(u_eval), label="Im(u)")
-plt.legend()
-plt.show()
+if __name__ == "__main__":
+    plt.plot(t, np.real(u_eval), label="Re(u)")
+    plt.plot(t, np.imag(u_eval), label="Im(u)")
+    plt.legend()
+    plt.show()

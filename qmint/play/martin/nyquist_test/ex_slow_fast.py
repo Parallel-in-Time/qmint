@@ -23,7 +23,7 @@ results = []
 
 plt.close()
 
-if 1:
+if __name__ == "__main__":
     num_timesteps = 1
     print(f"Running simulation with num_timesteps={num_timesteps}")
 
@@ -78,7 +78,7 @@ if 1:
     results.append({"N": num_timesteps, "dt": dt, "error": error})
 
 
-if 1:
+if __name__ == "__main__":
     # Plot analytical solution
     t_ = np.linspace(0, T, 1000)
     u_analytical_fin = np.array([de_solver.int_f(u0, dt=t, t=0) for t in t_])
@@ -99,6 +99,6 @@ if 0:
         print(f'N={r["N"]}, dt={r["dt"]:.6e}, error={r["error"]:.6e}, conv={conv}')
         prev_error = r["error"]
 
-if 1:
+if __name__ == "__main__":
     plt.legend()
     plt.show()

@@ -6,7 +6,8 @@ Detailed description of all specific versions and their associated changes is av
 
 **Status 3 - Alpha** : `v0.0.*`
 
-- integration/documentation of community playgrounds
+- ✅ integration/documentation of community playgrounds
+- ✅ proper README page
 
 **Status 4 - Beta** : `v0.1.*`
 

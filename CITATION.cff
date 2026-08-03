@@ -13,7 +13,7 @@ authors:
     affiliation: "University Grenoble Alpes, Laboratory Jean Kuntzmann, 38400 Saint-Martin-d'Hères, France"
 
 version: 0.1.0
-doi: ...
+doi: 10.5281/zenodo.21774191
 date-released: 2026-08-03
 keywords:
   - "time integration"

@@ -15,6 +15,8 @@ Spectral Deferred Corrections (SDC), Runge-Kutta methods (RKM), or `qmat` featur
 - provide an [documentation website](https://qmint.readthedocs.io) on the **theory** and **implementation** of SDC-related time-integration methods
 - implement a [companion package](./qmint) containing small classes and functions for quick **experiment** and **analysis**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21774191.svg)](https://doi.org/10.5281/zenodo.21774191)
+
 ## Installation
 
 ```bash
@@ -37,4 +39,15 @@ pip install qmint
 
 ## How to cite
 
-... incoming
+```bibtex
+@software{lunet2026qmint,
+  author       = {Lunet, Thibaut and Schreiber, Martin},
+  title        = {Parallel-in-Time/qmint},
+  month        = aug,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v0.1.0},
+  doi          = {10.5281/zenodo.21774191},
+  url          = {https://doi.org/10.5281/zenodo.21774191},
+}
+```

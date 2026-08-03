@@ -22,6 +22,8 @@ html_theme.sidebar_secondary.remove: true
 
 💾 Installation : `pip install qmint`, or see [detailed instructions ...](./installation.md)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21774191.svg)](https://doi.org/10.5281/zenodo.21774191)
+
 ::::{grid} 1 2 3 3
 :gutter: 3
 

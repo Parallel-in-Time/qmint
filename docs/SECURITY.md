@@ -2,12 +2,12 @@
 
 ## Supported Versions
 
-Package is currently under active **alpha** development.
+Package is currently under active **beta** development.
 While we recommend the use of the latest version, below is the list of the current supported versions :
 
 | Version | Stage | Supported |
 | ------- | ----- | --------- |
-| 0.0.x   | alpha | ✅        |
+| 0.x.x   | beta  | ✅        |
 
 ## Reporting a Vulnerability
 

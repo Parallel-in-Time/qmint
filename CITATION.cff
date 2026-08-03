@@ -12,9 +12,9 @@ authors:
     orcid: https://orcid.org/0000-0002-2390-6716
     affiliation: "University Grenoble Alpes, Laboratory Jean Kuntzmann, 38400 Saint-Martin-d'Hères, France"
 
-version: 0.0.1
+version: 0.1.0
 doi: ...
-date-released: 2026-08-02
+date-released: 2026-08-03
 keywords:
   - "time integration"
   - "spectral deferred corrections"

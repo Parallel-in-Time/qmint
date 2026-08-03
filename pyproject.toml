@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qmint"
-version = "0.0.1"
+version = "0.1.0"
 description = "Playing with different flavors of time-integration using qmat"
 dependencies = [
     "qmat",
@@ -19,7 +19,7 @@ maintainers = [
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
 
     "Topic :: Scientific/Engineering :: Mathematics",
 

@@ -54,6 +54,7 @@ docs = [
     "pygments",
     "pydata-sphinx-theme",
     "myst-parser",
+    "ipython",
 ]
 
 [project.urls]

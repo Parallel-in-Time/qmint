@@ -38,6 +38,8 @@ cd docs/$FOLDER
 ../scripts/run.sh $NOTEBOOK_FILE
 ```
 
+> 💡 If you are using VSCode, you can simply rerun a single notebook using the GUI (`Clear All Outputs`, `Restart`, `Run All`)
+
 If you modified several notebooks, and as a safety, it is also possible to regenerate all doing :
 
 ```bash

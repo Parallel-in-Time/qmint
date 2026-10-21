@@ -23,8 +23,8 @@ from qmint.steppers.dahlquist import DahlquistIMEX
 nNodes = 4
 nSweeps = 4
 stepUpdate = False
-implSweep = "LU"
-explSweep = "FE"
+implSweep = "MIN-SR-S"
+explSweep = "PIC"
 nodeType="LEGENDRE"
 quadType="RADAU-RIGHT"
 
@@ -35,7 +35,7 @@ diffOrder = 4
 
 # -- plot options
 cflAdvMax = 5
-nSamplesCFL = 301
+nSamples = 401
 nWavenumbers = 16
 
 # -----------------------------------------------------------------------------
@@ -55,6 +55,7 @@ DIFF_COEFFS = {
     4: ([-1, 16, -30, 16, -1], 12),
     6: ([2, -27, 270, -490, 270, -27, 2], 180),
     }
+sdcSuffix = f"M{nNodes}_K{nSweeps}_{implSweep}_{explSweep}"
 
 if advOrder == np.inf:
     def zAdv(theta):
@@ -83,19 +84,16 @@ else:
 
 
 theta = np.linspace(0, np.pi, num=nWavenumbers)
-cflAdv = np.linspace(0, cflAdvMax, num=nSamplesCFL)
-cflRatio = np.logspace(-2, 1, num=nSamplesCFL)
+cflAdv = np.linspace(0, cflAdvMax, num=nSamples)
+meshPeclet = np.logspace(-1, 1, num=nSamples)
 
-zE = -cflAdv[:, None, None]*zAdv(theta)[None, None, :]
-zI = cflRatio[None, :, None]*cflAdv[:, None, None]*zDiff(theta)[None, None, :]
-zI = (1+0j)*zI
-
-zE *= dim
-zI *= dim
+lamE = -dim*cflAdv[:, None, None]*zAdv(theta)[None, None, :]
+lamI = dim*cflAdv[:, None, None]/meshPeclet[None, :, None]*zDiff(theta)[None, None, :]
+lamI = (1 + 0j)*lamI
 
 if __name__ == "__main__":
-    print(f"Computing one SDC time-step on {zI.size} points ...")
-    problem = DahlquistIMEX(zI, zE)
+    print(f"Computing one SDC time-step on {lamI.size} complex points ...")
+    problem = DahlquistIMEX(lamI, lamE)
 
     coll = Collocation(nNodes=nNodes, nodeType=nodeType, quadType=quadType)
 
@@ -113,22 +111,19 @@ if __name__ == "__main__":
 
     u1 = uNum[-1]
     stab = np.abs(u1).max(axis=-1)
-    stab = np.clip(stab, 0, 1.2) # clip to ignore unstable area
-    # error = np.abs(u1 - np.exp(zI+zE))
+    error = np.abs(u1 - np.exp(lamI+lamE)).max(axis=-1)
 
 
-    plt.figure("imex stability")
+    plt.figure(f"imex stability {sdcSuffix}")
     plt.clf()
 
-    coords = (cflRatio, cflAdv)
-    plt.contourf(*coords, stab, levels = [0.8, 1, 1.2], cmap="coolwarm")
-    plt.colorbar()
+    coords = (meshPeclet, cflAdv)
+    plt.contourf(*coords, stab, levels=[0, 1, np.inf], colors=['white', 'gainsboro'])
     plt.contour(*coords, stab, levels=[1], colors="black")
-    # plt.contour(*coords, error, levels=[1], colors="red", linestyles=":")
-    # plt.contour(*coords, error, levels=[1e-1], colors="orange", linestyles="-.")
-    # plt.contour(*coords, error, levels=[1e-2], colors="gray", linestyles="--")
+    plt.contour(*coords, error, levels=[1e-1], colors="black", linestyles=":")
+    plt.contour(*coords, error, levels=[1e-2], colors="black", linestyles="--")
     plt.grid(True)
     plt.xscale('log')
     plt.ylabel(r"$\sigma_{adv}$", fontsize=12)
-    plt.xlabel(r"$\frac{\sigma_{diff}}{\sigma_{adv}}$", fontsize=18)
+    plt.xlabel(r"$Pe_\Delta$", fontsize=12)
     plt.tight_layout()

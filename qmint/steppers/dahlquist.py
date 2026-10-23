@@ -6,7 +6,7 @@ also implementing SDC sweeps with given :math:`Q_\Delta` coefficients.
 """
 import numpy as np
 
-import qmint.utils as utils
+import qmint.utils.check as check
 
 
 class Dahlquist():
@@ -97,7 +97,7 @@ class Dahlquist():
         uNum : np.ndarray
             The solution at each time-steps (+ initial solution).
         """
-        nNodes, Q, weights = utils.checkCoeff(Q, weights)
+        nNodes, Q, weights = check.checkCoeff(Q, weights)
 
         # Collocation problem matrix
         A = np.eye(nNodes) - self.lam[..., None, None]*self.dt*Q
@@ -159,7 +159,7 @@ class Dahlquist():
         uNum : np.ndarray
             The solution at each time-steps (+ initial solution).
         """
-        nNodes, Q, weights, QDelta, nSweeps = utils.checkCoeffSDC(
+        nNodes, Q, weights, QDelta, nSweeps = check.checkCoeffSDC(
             Q, weights, QDelta, nSweeps)
 
         # Preconditioner for each sweeps
@@ -287,7 +287,7 @@ class DahlquistIMEX():
         uNum : np.ndarray
             The solution at each time-steps (+ initial solution).
         """
-        nNodes, QI, wI, QE, wE, useWeights = utils.checkCoeff_IMEX(QI, wI, QE, wE)
+        nNodes, QI, wI, QE, wE, useWeights = check.checkCoeff_IMEX(QI, wI, QE, wE)
 
         # Collocation problem matrix
         A = np.eye(nNodes) \
@@ -366,7 +366,7 @@ class DahlquistIMEX():
         uNum : np.ndarray
             The solution at each time-steps (+ initial solution).
         """
-        nNodes, Q, weights, QDeltaI, QDeltaE, nSweeps = utils.checkCoeffSDC_IMEX(
+        nNodes, Q, weights, QDeltaI, QDeltaE, nSweeps = check.checkCoeffSDC_IMEX(
             Q, weights, QDeltaI, QDeltaE, nSweeps)
 
         # Preconditioner for each sweeps

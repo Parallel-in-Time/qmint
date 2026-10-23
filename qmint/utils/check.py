@@ -95,52 +95,52 @@ def checkCoeffSDC(Q, weights, QDelta, nSweeps):
 
 
 def checkCoeff_IMEX(QI, wI, QE, wE):
-        r"""
-        Check IMEX :math:`Q` coefficients and assert their consistency.
+    r"""
+    Check IMEX :math:`Q` coefficients and assert their consistency.
 
-        Parameters
-        ----------
-        QI : 2D array-like
-            :math:`Q` coefficients used for :math:`\lambda_I`.
-        wI : 1D array-like or None
-            Weights used for the step update on :math:`\lambda_I`.
-            If None, then step update is not done.
-        QE : 2D array-like
-            :math:`Q` coefficients used for :math:`\lambda_E`.
-        wE : 1D array-like or None
-            Weights used for the step update on :math:`\lambda_E`.
-            If None, then step update is not done.
+    Parameters
+    ----------
+    QI : 2D array-like
+        :math:`Q` coefficients used for :math:`\lambda_I`.
+    wI : 1D array-like or None
+        Weights used for the step update on :math:`\lambda_I`.
+        If None, then step update is not done.
+    QE : 2D array-like
+        :math:`Q` coefficients used for :math:`\lambda_E`.
+    wE : 1D array-like or None
+        Weights used for the step update on :math:`\lambda_E`.
+        If None, then step update is not done.
 
-        Returns
-        -------
-        nNodes : int
-            Number of nodes.
-        QI : np.2darray
-            :math:`Q` coefficients used for :math:`\lambda_I`.
-        wI : np.1darray or None
-            Weights used for the step update on :math:`\lambda_I`.
-        QE : np.2darray
-            :math:`Q` coefficients used for :math:`\lambda_E`.
-        wE : np.1darray or None
-            Weights used for the step update on :math:`\lambda_E`.
-        useWeights : boll
-            Wether or not the step update (using weights) is done.
-        """
-        QI, QE = np.asarray(QI), np.asarray(QE)
-        assert np.allclose(QI.sum(axis=1), QE.sum(axis=1)), \
-            "QI and QE do not correspond to the same nodes"
+    Returns
+    -------
+    nNodes : int
+        Number of nodes.
+    QI : np.2darray
+        :math:`Q` coefficients used for :math:`\lambda_I`.
+    wI : np.1darray or None
+        Weights used for the step update on :math:`\lambda_I`.
+    QE : np.2darray
+        :math:`Q` coefficients used for :math:`\lambda_E`.
+    wE : np.1darray or None
+        Weights used for the step update on :math:`\lambda_E`.
+    useWeights : boll
+        Wether or not the step update (using weights) is done.
+    """
+    QI, QE = np.asarray(QI), np.asarray(QE)
+    assert np.allclose(QI.sum(axis=1), QE.sum(axis=1)), \
+        "QI and QE do not correspond to the same nodes"
 
-        nNodes = QI.shape[0]
-        assert QI.shape == (nNodes, nNodes), "QI is not a square matrix"
-        assert QI.shape == QE.shape, "QI and QE do not have the same shape"
+    nNodes = QI.shape[0]
+    assert QI.shape == (nNodes, nNodes), "QI is not a square matrix"
+    assert QI.shape == QE.shape, "QI and QE do not have the same shape"
 
-        useWeights = True
-        if wI is None or wE is None:
-            assert wE is None and wI is None, \
-                "it's either weights for everyone or no weight"
-            useWeights = False
+    useWeights = True
+    if wI is None or wE is None:
+        assert wE is None and wI is None, \
+            "it's either weights for everyone or no weight"
+        useWeights = False
 
-        return nNodes, QI, wI, QE, wE, useWeights
+    return nNodes, QI, wI, QE, wE, useWeights
 
 
 def checkCoeffSDC_IMEX(Q, weights, QDeltaI, QDeltaE, nSweeps):

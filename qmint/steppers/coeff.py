@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.linalg import blas
 
-import qmint.utils as utils
+import qmint.utils.check as check
 from qmint.diffops import DiffOp
 
 
@@ -175,7 +175,7 @@ class CoeffStepper():
             Array of shape `(nSteps+1,*uShape)` that stores the solution at
             each time-step.
         """
-        nNodes, Q, weights = utils.checkCoeff(Q, weights)
+        nNodes, Q, weights = check.checkCoeff(Q, weights)
 
         assert self.lowerTri(Q), "lower triangular matrix Q expected for non-linear solver"
         Q = self.dt*Q
@@ -285,7 +285,7 @@ class CoeffStepper():
             Array of shape `(nSteps+1,*uShape)` that stores the solution at
             each time-step.
         """
-        nNodes, Q, weights, QDelta, nSweeps = utils.checkCoeffSDC(Q, weights, QDelta, nSweeps)
+        nNodes, Q, weights, QDelta, nSweeps = check.checkCoeffSDC(Q, weights, QDelta, nSweeps)
         for qDelta in QDelta:
             assert self.lowerTri(qDelta), \
                 "lower triangular matrices QDelta expected for non-linear SDC solver"

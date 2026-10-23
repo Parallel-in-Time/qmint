@@ -5,7 +5,7 @@ from qmat.utils import checkOverriding, storeClass, importAll
 from qmat.lagrange import LagrangeApproximation
 
 from qmint.steppers.coeff import CoeffStepper, DiffOp
-import qmint.utils as utils
+import qmint.utils.check as check
 
 
 class PhiStepper(CoeffStepper):
@@ -296,7 +296,7 @@ class PhiStepper(CoeffStepper):
             weights = approx.getIntegrationMatrix([(0, 1)]).ravel()
         if weights is False:
             weights = None
-        nNodes, Q, weights = utils.checkCoeff(Q, weights)
+        nNodes, Q, weights = check.checkCoeff(Q, weights)
         assert nNodes == self.nNodes, "solver and Q do not have the same number of nodes"
         assert np.allclose(Q.sum(axis=1), self.nodes), "solver and Q do not have the same nodes"
         Q = self.dt*Q

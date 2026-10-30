@@ -21,10 +21,11 @@ DIFF_COEFFS = {
     6: ([2, -27, 270, -490, 270, -27, 2], 180),
     }
 
+
 def getFourierSymbol(deriv, order):
 
     # Exact Fourier symbols
-    if order == np.inf:
+    if order in [np.inf, -1]:
         if deriv == 1:  # advection
             def z(theta):
                 return 1j*theta
@@ -63,7 +64,7 @@ class EigenvaluesIMEX():
 
     def getAdvDiff(self, advOrder, diffOrder, dim=3, cflMax=5, ePecletMin=-1, ePecletMax=2):
         theta = np.linspace(0, np.pi, num=self.nWaveNumbers+1)[1:]
-        cflAdv = np.linspace(0, cflMax, num=self.nSamplesY)
+        cflAdv = np.linspace(0, cflMax, num=self.nSamplesY+1)[1:]
         meshPeclet = np.logspace(ePecletMin, ePecletMax, num=self.nSamplesX)
 
         zAdv = getFourierSymbol(1, advOrder)
@@ -155,3 +156,21 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, **params):
     error = np.abs(u1 - np.exp(lamI+lamE)).max(axis=-1)
 
     return stab, error, suffix
+
+
+def getMaxCFL(stab, cflAdv):
+    idx = np.argmax(stab > 1, axis=0)
+
+    x1 = cflAdv[idx]
+    x2 = cflAdv[idx+1]
+
+    y1 = stab[idx, range(len(idx))]
+    y2 = stab[idx+1, range(len(idx))]
+
+    # y_i = a x_i + b
+    a = (y2-y1)/(x2-x1)
+    b = (y1*(x2-x1) - x1*(y2-y1))/(x2-x1)
+    # 1 = a x_lim + b
+    cflMax = (1-b)/a
+
+    return cflMax

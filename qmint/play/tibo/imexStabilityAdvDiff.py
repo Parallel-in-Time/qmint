@@ -8,9 +8,8 @@ Script investigating IMEX stability for advection-diffusion
    :linenos:
    :lines: 11-
 """
-import numpy as np
-
-from qmint.utils.analysis import EigenvaluesIMEX, runDahlquistIMEX, IMEX_SCHEMES
+from qmint.utils.analysis import \
+    EigenvaluesIMEX, runDahlquistIMEX, IMEX_SCHEMES, getMaxCFL
 from qmint.utils.plots import plotAdvDiffStability, plotAdvDiffMaxCFL
 
 # -----------------------------------------------------------------------------
@@ -39,8 +38,7 @@ if __name__ == "__main__":
         stab, cflAdv, meshPeclet, error, figName=f"IMEX stability {suffix}")
 
     print("Computing maximum CFL vs Pe ...")
-    idx = np.argmax(stab > 1, axis=0)
-    cflMax = cflAdv[idx]
+    cflMax = getMaxCFL(stab, cflAdv)
     print(" -- done !")
 
     plotAdvDiffMaxCFL(meshPeclet, cflMax, label=suffix)

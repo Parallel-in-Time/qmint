@@ -91,6 +91,7 @@ IMEX_SCHEMES = {
             explSweep = "PIC",
             nodeType="LEGENDRE",
             quadType="RADAU-RIGHT",
+            theta=0,
         ),
     "SDC23":
         dict(
@@ -100,6 +101,17 @@ IMEX_SCHEMES = {
             explSweep = "PIC",
             nodeType="LEGENDRE",
             quadType="RADAU-RIGHT",
+            theta=0,
+        ),
+    "SDC44-T":
+        dict(
+            nNodes = 4,
+            nSweeps = 4,
+            implSweep = "MIN-SR-S",
+            explSweep = "PIC",
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            theta=0.5,
         ),
     }
 
@@ -111,7 +123,7 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, **params):
     nPoints = max(np.prod(lamI.shape), np.prod(lamE.shape))
 
     if scheme.startswith("SDC"):
-        nNodes, nSweeps, implSweep, explSweep, nodeType, quadType = \
+        nNodes, nSweeps, implSweep, explSweep, nodeType, quadType, theta = \
             params.values()
         suffix = f"M{nNodes}_K{nSweeps}_{implSweep}_{explSweep}"
 
@@ -129,7 +141,7 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, **params):
 
         uNum = problem.runSDC(
             coll.Q, coll.weights if stepUpdate else None,
-            qDeltaI, qDeltaE, nSweeps=nSweeps)
+            qDeltaI, qDeltaE, nSweeps=nSweeps, theta=theta)
 
     else:
         print(f"Computing one IMEX RK time-step on {nPoints} complex points ...")

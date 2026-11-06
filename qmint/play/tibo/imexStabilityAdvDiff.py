@@ -15,7 +15,7 @@ from qmint.utils.plots import plotAdvDiffStability, plotAdvDiffMaxCFL
 # -----------------------------------------------------------------------------
 # Script parameters
 # -----------------------------------------------------------------------------
-scheme = "SDC44"
+scheme = "SDC44-T"
 params = IMEX_SCHEMES[scheme]
 
 # -- space discretization
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     stab, error, suffix = runDahlquistIMEX(lamI, lamE, scheme, **params)
 
     plotAdvDiffStability(
-        stab, cflAdv, meshPeclet, error, figName=f"IMEX stability {suffix}")
+        stab, cflAdv, meshPeclet, error, figName=f"IMEX stability {scheme}")
 
     print("Computing maximum CFL vs Pe ...")
     cflMax = getMaxCFL(stab, cflAdv)

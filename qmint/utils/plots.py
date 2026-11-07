@@ -32,7 +32,7 @@ def plotAdvDiffStability(stab, cflAdv, meshPeclet, error=None, figName=None, cle
         plt.contour(*coords, error, levels=[1e-2], colors="black", linestyles="--")
     plt.grid(True)
     plt.xscale('log')
-    plt.ylabel(r"$\sigma_{adv}$")
+    plt.ylabel(r"$CFL$")
     plt.xlabel(r"$Pe_\Delta$")
     plt.tight_layout()
 
@@ -40,7 +40,7 @@ def plotAdvDiffStability(stab, cflAdv, meshPeclet, error=None, figName=None, cle
 def plotAdvDiffMaxCFL(meshPeclet, cflMax, label, figName="CFL max"):
     plt.figure(figName)
     plt.semilogx(meshPeclet, cflMax, label=label)
-    plt.ylabel(r"$\sigma_{adv,max}$")
+    plt.ylabel(r"$CFL$")
     plt.xlabel(r"$Pe_\Delta$")
     plt.legend()
     plt.grid(True)

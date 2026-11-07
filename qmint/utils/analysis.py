@@ -164,8 +164,14 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, errorRef=None,
     nPoints = max(np.prod(lamI.shape), np.prod(lamE.shape))
 
     if scheme.startswith("SDC"):
-        nNodes, nSweeps, implSweep, explSweep, nodeType, quadType, theta = \
-            params.values()
+        nNodes = params["nNodes"]
+        nSweeps = params["nSweeps"]
+        implSweep = params["implSweep"]
+        explSweep = params["explSweep"]
+        nodeType = params["nodeType"]
+        quadType = params["quadType"]
+        theta = params.get("theta", 0)
+        epsilon = params.get("epsilon", 0)
         suffix = f"M{nNodes}_K{nSweeps}_{implSweep}_{explSweep}"
 
         print(f"Computing one SDC time-step on {nPoints} complex points ...")
@@ -182,7 +188,7 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, errorRef=None,
 
         uNum = problem.runSDC(
             coll.Q, coll.weights if stepUpdate else None,
-            qDeltaI, qDeltaE, nSweeps=nSweeps, theta=theta)
+            qDeltaI, qDeltaE, nSweeps=nSweeps, theta=theta, epsilon=epsilon)
 
     else:
         print(f"Computing one IMEX RK time-step on {nPoints} complex points ...")
@@ -223,7 +229,12 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, errorRef=None,
 
 
 def getMaxCFL(stab, cflAdv):
+    n = len(cflAdv)
     idx = np.argmax(stab > 1, axis=0)
+    # if never unstable, argmax returns 0 but the scheme is stable up to cflMax:
+    # detect via the last sample and cap at cflAdv[-1]
+    neverUnstable = stab[-1] <= 1
+    idx = np.minimum(idx, n-2)
 
     x1 = cflAdv[idx]
     x2 = cflAdv[idx+1]
@@ -236,5 +247,10 @@ def getMaxCFL(stab, cflAdv):
     b = (y1*(x2-x1) - x1*(y2-y1))/(x2-x1)
     # 1 = a x_lim + b
     cflMax = (1-b)/a
+
+    # schemes stable on the whole sampled range are capped at cflAdv[-1];
+    # schemes unstable from the first sample give x_lim < 0, clipped to 0
+    cflMax = np.where(neverUnstable, cflAdv[-1], cflMax)
+    cflMax = np.clip(cflMax, 0, cflAdv[-1])
 
     return cflMax

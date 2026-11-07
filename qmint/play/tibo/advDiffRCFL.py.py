@@ -13,7 +13,7 @@ from qmint.utils.plots import plt
 # Script parameters
 # -----------------------------------------------------------------------------
 refScheme = "RK443"
-compScheme = ["Euler", "SDC44", "SDC23", "SDC44-T"]
+compScheme = ["Euler", "SDC44", "SDC23"]
 
 
 # -- space discretization

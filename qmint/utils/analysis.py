@@ -153,7 +153,58 @@ IMEX_SCHEMES = {
             quadType="RADAU-RIGHT",
             theta=0.5,
         ),
+    # Parallel stabilized PIMEX-SDC: diagonal QDelta (MIN-SR-S, as in the plain
+    # SDC schemes above) + Stiller's theta-term (theta/2) A_c^2 added on BOTH
+    # sides of each node's own diagonal implicit solve (theta_m = q_m * dt),
+    # so the node updates stay decoupled (parallel) and the fixed point stays
+    # the collocation solution (order preserved).
+    "SDC23-PS":
+        dict(nNodes=2, nSweeps=3, parstiller=True),
+    "SDC44-PS":
+        dict(nNodes=4, nSweeps=4, parstiller=True),
     }
+
+
+def runDahlquistIMEXParStiller(lamI, lamE, nNodes=4, nSweeps=4,
+                               nodeType="LEGENDRE", quadType="RADAU-RIGHT",
+                               thetaScale=1.0):
+    r"""Parallel stabilized PIMEX-SDC: diagonal QDelta sweeps (MIN-SR-S) with
+    Stiller's theta-term added to each node's own implicit solve.
+
+    Sweep k updates every node m independently (parallel across nodes):
+
+        u_m^{k+1} = u_0 + S_m^k + dt q_m [ phi_im(u_m^{k+1}) - phi_im(u_m^k) ],
+
+    with S_m^k = dt sum_i Q[m,i] (lamI+lamE) u_i^k (full Q on the old sweep,
+    available at all nodes simultaneously) and
+    phi_im = (lamI - thetaScale * q_m/2 * Im(lamE)^2) u,  theta_m = q_m * dt.
+
+    The theta-term is local to node m, so the block-diagonal structure of the
+    parallel sweeps is preserved.  It cancels at the fixed point (collocation
+    solution, order preserved) while damping the sweep iteration.
+
+    Returns
+    -------
+    uLast : array of shape lamI.shape
+        Last-node solution after `nSweeps` sweeps.
+    """
+    from qmat.qdelta.diag import MIN_SR_S
+    coll = Collocation(nNodes=nNodes, nodeType=nodeType, quadType=quadType)
+    Q = coll.Q
+    Qd = np.asarray(MIN_SR_S(qGen=coll).genCoeffs(k=list(range(1, nSweeps+1))))
+    lam = lamI + lamE
+    zi2 = lamE.imag**2
+    one = np.ones(lamI.shape, dtype=complex)
+    u = np.ones((nNodes, *lamI.shape), dtype=complex)  # copy initialization
+    for k in range(nSweeps):
+        qm = Qd[k].diagonal()
+        uNew = np.zeros_like(u)
+        for m in range(nNodes):
+            zI = lamI - thetaScale * qm[m]/2 * zi2
+            Sm = np.einsum('i,i...->...', Q[m], lam * u)
+            uNew[m] = (one + Sm - qm[m]*zI*u[m]) / (1 - qm[m]*zI)
+        u = uNew
+    return u[-1]
 
 
 def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, errorRef=None,
@@ -166,6 +217,20 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, errorRef=None,
     if scheme.startswith("SDC"):
         nNodes = params["nNodes"]
         nSweeps = params["nSweeps"]
+        if params.get("parstiller", False):
+            # parallel stabilized PIMEX-SDC: diagonal QDelta + Stiller theta-term
+            suffix = f"M{nNodes}_K{nSweeps}_PARSTILLER"
+            u1 = runDahlquistIMEXParStiller(lamI, lamE, nNodes=nNodes, nSweeps=nSweeps,
+                                            thetaScale=params.get("thetaScale", 1.0))
+            stab = np.abs(u1).max(axis=-1)
+            if errorRef is None:
+                errFull = np.abs(u1 - np.exp(lamI+lamE))
+            else:
+                errFull = np.abs(u1 - np.exp(errorRef[0]+errorRef[1]))
+            if errorMask is not None:
+                errFull = errFull[..., errorMask]
+            error = errFull.max(axis=-1)
+            return stab, error, suffix
         implSweep = params["implSweep"]
         explSweep = params["explSweep"]
         nodeType = params["nodeType"]

@@ -388,7 +388,8 @@ class DahlquistIMEX():
 
                 b = uNum[i][..., None, None] \
                     + self.lamI[..., None, None]*self.dt*(Q - QDeltaI[k]) @ uNodes \
-                    + self.lamE[..., None, None]*self.dt*(Q - QDeltaE[k]) @ uNodes
+                    + self.lamE[..., None, None]*self.dt*(Q - QDeltaE[k]) @ uNodes \
+                    - epsilon*self.lamI[..., None, None]*self.dt*(QDeltaI[k] @ uNodes)
 
                 # b has shape [..., nNodes, 1]
                 # P[k] has shape [..., nNodes, nNodes]

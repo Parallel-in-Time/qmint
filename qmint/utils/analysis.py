@@ -183,7 +183,7 @@ IMEX_SCHEMES = {
     # on BOTH sides of each node equation.  stillerSI = (sPredictor, sCorrector)
     # stages of the SI1 integrators.  SDC-SI(1,1)^3_2 is L-stable (order 3);
     # SDC-SI(2,2)^15_6 is L-stable up to order 11 (Stiller, Table 1).
-    "SDC-SI23":
+    "SDC23-S":
         dict(
             nNodes = 2,
             nSweeps = 3,
@@ -191,7 +191,7 @@ IMEX_SCHEMES = {
             quadType="RADAU-RIGHT",
             stillerSI=(1, 1),
         ),
-    "SDC-SI26":
+    "SDC26-S":
         dict(
             nNodes = 6,
             nSweeps = 15,
@@ -201,7 +201,7 @@ IMEX_SCHEMES = {
         ),
     # Stiller's Table 1 order-7 configuration: M=4 Radau points, K=8 sweeps
     # with the two-stage SI1(2) predictor/corrector -- A-/L-stable
-    "SDC-SI44":
+    "SDC44-S":
         dict(
             nNodes = 4,
             nSweeps = 8,

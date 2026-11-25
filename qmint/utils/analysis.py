@@ -153,6 +153,86 @@ IMEX_SCHEMES = {
             quadType="RADAU-RIGHT",
             theta=0.5,
         ),
+    # Stiller's original semi-implicit SDC (SDC-SI): classical marching sweeps
+    # with BE (implicit) / FE (explicit) preconditioners, plus the Lax--Wendroff
+    # term (theta_m/2) lamE^2 with theta_m = Delta t_m (= diag(QDeltaI) in units
+    # of dt) on BOTH sides of each node equation (runSDC theta="stiller").
+    # Fixed point = collocation solution (order preserved).
+    "SDC23-ST":
+        dict(
+            nNodes = 2,
+            nSweeps = 3,
+            implSweep = "BE",
+            explSweep = "FE",
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            theta="stiller",
+        ),
+    "SDC44-ST":
+        dict(
+            nNodes = 4,
+            nSweeps = 4,
+            implSweep = "BE",
+            explSweep = "FE",
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            theta="stiller",
+        ),
+    # Stiller's original semi-implicit SDC (SDC-SI), via runSDCStiller:
+    # classical marching sweeps + LW term (theta_m/2) lamE^2 with theta_m=Delta t_m
+    # on BOTH sides of each node equation.  stillerSI = (sPredictor, sCorrector)
+    # stages of the SI1 integrators.  SDC-SI(1,1)^3_2 is L-stable (order 3);
+    # SDC-SI(2,2)^15_6 is L-stable up to order 11 (Stiller, Table 1).
+    "SDC-SI23":
+        dict(
+            nNodes = 2,
+            nSweeps = 3,
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            stillerSI=(1, 1),
+        ),
+    "SDC-SI26":
+        dict(
+            nNodes = 6,
+            nSweeps = 15,
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            stillerSI=(2, 2),
+        ),
+    # Stiller's Table 1 order-7 configuration: M=4 Radau points, K=8 sweeps
+    # with the two-stage SI1(2) predictor/corrector -- A-/L-stable
+    "SDC-SI44":
+        dict(
+            nNodes = 4,
+            nSweeps = 8,
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            stillerSI=(2, 2),
+        ),
+    # Marching sweeps with the both-sides S-term: fraction sAdv of the advection
+    # moved into the implicit preconditioner (runSDC sAdv parameter)
+    "SDC23-SA":
+        dict(
+            nNodes = 2,
+            nSweeps = 3,
+            implSweep = "MIN-SR-S",
+            explSweep = "PIC",
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            theta=0,
+            sAdv=2.0,
+        ),
+    "SDC44-SA":
+        dict(
+            nNodes = 4,
+            nSweeps = 4,
+            implSweep = "MIN-SR-S",
+            explSweep = "PIC",
+            nodeType="LEGENDRE",
+            quadType="RADAU-RIGHT",
+            theta=0,
+            sAdv=2.0,
+        ),
     # Parallel stabilized PIMEX-SDC: diagonal QDelta (MIN-SR-S, as in the plain
     # SDC schemes above) + Stiller's theta-term (theta/2) A_c^2 added on BOTH
     # sides of each node's own diagonal implicit solve (theta_m = q_m * dt),
@@ -162,12 +242,21 @@ IMEX_SCHEMES = {
         dict(nNodes=2, nSweeps=3, parstiller=True),
     "SDC44-PS":
         dict(nNodes=4, nSweeps=4, parstiller=True),
+    # Parallel S-term PIMEX-SDC: same diagonal QDelta sweeps, but the node-local
+    # term added on BOTH sides of each node's diagonal solve is a fraction
+    # sAdv of the advection itself (frozen Jacobian), i.e. per mode
+    # zI -> zI + sAdv * q_m * zE.  Fixed point stays the collocation solution
+    # (order preserved), node updates stay decoupled (parallel).
+    "SDC23-PA":
+        dict(nNodes=2, nSweeps=3, parstiller=True, sAdv=2.0, thetaScale=0.0),
+    "SDC44-PA":
+        dict(nNodes=4, nSweeps=4, parstiller=True, sAdv=2.0, thetaScale=0.0),
     }
 
 
 def runDahlquistIMEXParStiller(lamI, lamE, nNodes=4, nSweeps=4,
                                nodeType="LEGENDRE", quadType="RADAU-RIGHT",
-                               thetaScale=1.0):
+                               thetaScale=1.0, sAdv=0.0):
     r"""Parallel stabilized PIMEX-SDC: diagonal QDelta sweeps (MIN-SR-S) with
     Stiller's theta-term added to each node's own implicit solve.
 
@@ -193,6 +282,10 @@ def runDahlquistIMEXParStiller(lamI, lamE, nNodes=4, nSweeps=4,
     parallel sweeps is preserved.  It cancels at the fixed point (collocation
     solution, order preserved) while damping the sweep iteration.
 
+    With sAdv > 0 (S-term, SDC-PA), a fraction sAdv of the advection itself is
+    additionally moved into the node-local implicit solve on BOTH sides:
+    per mode zI -> zI + sAdv * q_m * zE (in addition to the theta-term).
+
     Returns
     -------
     uLast : array of shape lamI.shape
@@ -210,7 +303,7 @@ def runDahlquistIMEXParStiller(lamI, lamE, nNodes=4, nSweeps=4,
         qm = Qd[k].diagonal()
         uNew = np.zeros_like(u)
         for m in range(nNodes):
-            zI = lamI - thetaScale * qm[m]/2 * zi2
+            zI = lamI + sAdv * qm[m] * lamE - thetaScale * qm[m]/2 * zi2
             Sm = np.einsum('i,i...->...', Q[m], lam * u)
             uNew[m] = (one + Sm - qm[m]*zI*u[m]) / (1 - qm[m]*zI)
         u = uNew
@@ -228,10 +321,13 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False,
         nNodes = params["nNodes"]
         nSweeps = params["nSweeps"]
         if params.get("parstiller", False):
-            # parallel stabilized PIMEX-SDC: diagonal QDelta + Stiller theta-term
-            suffix = f"M{nNodes}_K{nSweeps}_PARSTILLER"
+            # parallel stabilized PIMEX-SDC: diagonal QDelta + node-local
+            # Stiller theta-term (both sides) and/or S-term sAdv (both sides)
+            sAdv = params.get("sAdv", 0.0)
+            suffix = f"M{nNodes}_K{nSweeps}_PARSTILLER" + (f"_S{sAdv}" if sAdv else "")
             u1 = runDahlquistIMEXParStiller(lamI, lamE, nNodes=nNodes, nSweeps=nSweeps,
-                                            thetaScale=params.get("thetaScale", 1.0))
+                                            thetaScale=params.get("thetaScale", 1.0),
+                                            sAdv=sAdv)
             stab = np.abs(u1).max(axis=-1)
             if errorRef is None:
                 errFull = np.abs(u1 - np.exp(lamI+lamE))
@@ -241,18 +337,41 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False,
                 errFull = errFull[..., errorMask]
             error = errFull.max(axis=-1)
             return stab, error, suffix
-        implSweep = params["implSweep"]
-        explSweep = params["explSweep"]
         nodeType = params["nodeType"]
         quadType = params["quadType"]
-        theta = params.get("theta", 0)
-        epsilon = params.get("epsilon", 0)
-        suffix = f"M{nNodes}_K{nSweeps}_{implSweep}_{explSweep}"
 
         print(f"Computing one SDC time-step on {nPoints} complex points ...")
         problem = DahlquistIMEX(lamI, lamE)
 
         coll = Collocation(nNodes=nNodes, nodeType=nodeType, quadType=quadType)
+
+        if "stillerSI" in params:
+            # Stiller's original SDC-SI: dedicated marching stepper
+            # (runSDCStiller), classical subinterval preconditioner + both-sides
+            # LW term theta_m = Delta t_m
+            sP, sC = params["stillerSI"]
+            uNum = problem.runSDCStiller(
+                coll.Q, nSweeps, sPredictor=sP, sCorrector=sC,
+                weights=coll.weights if stepUpdate else None)
+            suffix = f"M{nNodes}_K{nSweeps}_SI{sP}{sC}"
+            u1 = uNum[-1]
+            stab = np.abs(u1).max(axis=-1)
+            if errorRef is None:
+                errFull = np.abs(u1 - np.exp(lamI+lamE))
+            else:
+                errFull = np.abs(u1 - np.exp(errorRef[0]+errorRef[1]))
+            if errorMask is not None:
+                errFull = errFull[..., errorMask]
+            error = errFull.max(axis=-1)
+            print(" -- done !")
+            return stab, error, suffix
+
+        implSweep = params["implSweep"]
+        explSweep = params["explSweep"]
+        theta = params.get("theta", 0)
+        epsilon = params.get("epsilon", 0)
+        sAdv = params.get("sAdv", 0)
+        suffix = f"M{nNodes}_K{nSweeps}_{implSweep}_{explSweep}" + (f"_S{sAdv}" if sAdv else "")
 
         genI = QDELTA_GENERATORS[implSweep](qGen=coll)
         genE = QDELTA_GENERATORS[explSweep](qGen=coll)
@@ -261,9 +380,14 @@ def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False,
         qDeltaI = genI.genCoeffs(k=sweeps)
         qDeltaE = genE.genCoeffs(k=sweeps)
 
+        if isinstance(theta, str) and theta == "stiller":
+            # Stiller's original choice theta_m = Delta t_m = q_m * dt
+            theta = np.diagonal(qDeltaI[0])
+
         uNum = problem.runSDC(
             coll.Q, coll.weights if stepUpdate else None,
-            qDeltaI, qDeltaE, nSweeps=nSweeps, theta=theta, epsilon=epsilon)
+            qDeltaI, qDeltaE, nSweeps=nSweeps, theta=theta, epsilon=epsilon,
+            sAdv=sAdv)
 
     else:
         print(f"Computing one IMEX RK time-step on {nPoints} complex points ...")

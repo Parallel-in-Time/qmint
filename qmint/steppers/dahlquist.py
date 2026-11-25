@@ -314,14 +314,15 @@ class DahlquistIMEX():
         return uNum
 
 
-    def runSDC(self, Q, weights, QDeltaI, QDeltaE, nSweeps, theta=0, epsilon=0):
+    def runSDC(self, Q, weights, QDeltaI, QDeltaE, nSweeps, theta=0, epsilon=0,
+               sAdv=0):
         r"""
         Run the time-stepper for all :math:`\lambda_I` and :math:`\lambda_E` using SDC sweeps.
         For each time-step and sweep :math:`k` it solves :
 
         .. math::
 
-            (I - \Delta{t}\lambda_I Q_\Delta^I - \Delta{t}\lambda_E Q_\Delta^I){\bf u}^{k+1}
+            (I - \Delta{t}\lambda_I Q_\Delta^I - \Delta{t}\lambda_E Q_\Delta^E){\bf u}^{k+1}
             = {\bf u}_0 + \Delta{t}\left[
                 \lambda Q - \lambda_I Q_\Delta^I - \lambda_E Q_\Delta^E\right]
             {\bf u}^{k},
@@ -346,7 +347,7 @@ class DahlquistIMEX():
         weights : 1D array-like or none
             Quadrature weights associated to the nodes. If None, last node is
             used for the step update.
-        QDeltaE : 2D or 3D array-like
+        QDeltaI : 2D or 3D array-like
             The :math:`Q_\Delta^I` coefficients used for the :math:`\lambda_I`
             term (3D if changes with sweeps).
         QDeltaE : 2D or 3D array-like
@@ -354,12 +355,25 @@ class DahlquistIMEX():
             term (3D if changes with sweeps).
         nSweeps : int
             Number of sweeps.
-        theta : float
-            Coefficient for the term :math:`\frac{\theta}{2}\lambda_E^2` that is
-            added to :math:`\lambda_I` (default is 0)
+        theta : float or 1D array-like of length nNodes
+            Stiller's Lax--Wendroff parameter :math:`\theta_m` at each node
+            (in units of the time-step :math:`\Delta t`), entering the implicit
+            part as :math:`\frac{\theta_m}{2}\lambda_E^2` on the diagonal of
+            node :math:`m` ONLY, on BOTH sides of the sweep equation (added in
+            the preconditioner and subtracted in the right-hand side), so the
+            fixed point stays the collocation solution (order preserved).
+            Pass ``theta=np.diagonal(QDeltaI[0])`` for Stiller's original choice
+            :math:`\theta_m = \Delta t_m` (default is 0)
         epsilon : float
             Coefficient for the multiplicative factor :math:`(1+\epsilon)`
             for :math:`\lambda_I` (default is 0)
+        sAdv : float
+            Fraction of the explicit advection moved into the implicit
+            preconditioner on BOTH sides of the sweep equation, i.e.
+            :math:`Q_\Delta^E \to Q_\Delta^E + s_{Adv} Q_\Delta^I` in both the
+            preconditioner and the right-hand side; per mode this adds
+            :math:`s_{Adv}\, z_E` to :math:`z_I`, and the fixed point stays the
+            collocation solution (order preserved) (default is 0)
 
         Returns
         -------
@@ -368,13 +382,47 @@ class DahlquistIMEX():
         """
         nNodes, Q, weights, QDeltaI, QDeltaE, nSweeps = check.checkCoeffSDC_IMEX(
             Q, weights, QDeltaI, QDeltaE, nSweeps)
+        dt, lamI, lamE = self.dt, self.lamI, self.lamE
+
+        if np.any(theta):
+            # Stiller LW term, node-local: per-node theta_m (units of dt),
+            # diagonal-only factor thetaD[k,m] = theta_m * (QDeltaI[k])[m,m],
+            # so that theta_m = Delta t_m = q_m*dt gives (q_m^2/2) z_E^2 per mode
+            thetaM = np.broadcast_to(
+                np.atleast_1d(np.asarray(theta, dtype=float)), (nNodes,))
+            qDiag = np.diagonal(QDeltaI, axis1=-2, axis2=-1)  # (nSweeps, nNodes)
+            thetaD = qDiag * thetaM[None, :]  # (nSweeps, nNodes)
+            thetaMat = np.eye(nNodes)[None, :, :] * thetaD[..., None, :]  # (nSweeps, nNodes, nNodes)
+        else:
+            thetaD = np.zeros((nSweeps, nNodes))
+            thetaMat = 0.0
 
         # Preconditioner for each sweeps
-        P = np.eye(nNodes)[None, ...] \
-            - (self.lamI[..., None, None, None]*(1+epsilon)
-               + theta/2*self.lamE[..., None, None, None]**2
-               )*self.dt*QDeltaI \
-            - self.lamE[..., None, None, None]*self.dt*QDeltaE
+        P = (np.eye(nNodes)[None, ...]
+             - dt * QDeltaI * lamI[..., None, None, None]
+             - dt * QDeltaE * lamE[..., None, None, None]
+             # -- additional terms
+             - epsilon * dt * QDeltaI * lamI[..., None, None, None]     # --> numerical diffusion
+             - 0.5 * thetaMat * dt**2 * lamE[..., None, None, None]**2  # --> Stiller term
+             - sAdv * dt * QDeltaI * lamE[..., None, None, None]        # --> Advection term
+            )
+
+        # P does not depend on the time-step, so its inverse is computed once
+        # and reused for all sweeps and all time-steps (batched matmul instead
+        # of a batched solve per sweep: ~4x faster for one step, more when
+        # amortized over several steps).  Works for any QDelta (dense included),
+        # but solving via an explicit inverse loses accuracy if P is badly
+        # conditioned, so fall back to np.linalg.solve in that case (cheap
+        # condition estimate from the inverse we just computed: inf-norms).
+        try:
+            PInv = np.linalg.inv(P)
+            condEst = (np.abs(P).sum(axis=-1).max(axis=-1)
+                       * np.abs(PInv).sum(axis=-1).max(axis=-1)).max()
+            useInv = bool(condEst < 1e12)
+        except np.linalg.LinAlgError:
+            # exactly singular P: fall back to solve
+            PInv = None
+            useInv = False
 
         uNum = np.zeros((self.nSteps+1, *self.uShape), dtype=self.dtype)
         uNum[0] = self.u0
@@ -386,15 +434,22 @@ class DahlquistIMEX():
 
             for k in range(nSweeps):
 
-                b = uNum[i][..., None, None] \
-                    + self.lamI[..., None, None]*self.dt*(Q - QDeltaI[k]) @ uNodes \
-                    + self.lamE[..., None, None]*self.dt*(Q - QDeltaE[k]) @ uNodes \
-                    - epsilon*self.lamI[..., None, None]*self.dt*(QDeltaI[k] @ uNodes)
+                b = (uNum[i][..., None, None]
+                     + lamI[..., None, None] * dt * (Q - QDeltaI[k]) @ uNodes
+                     + lamE[..., None, None] * dt * (Q - QDeltaE[k]) @ uNodes
+                     # -- additional terms
+                     - epsilon * lamI[..., None, None] * dt * (QDeltaI[k] @ uNodes)                 # --> numerical diffusion
+                     - 0.5 * dt**2 * lamE[..., None, None]**2 * (thetaD[k][None, :, None] * uNodes) # --> Stiller term
+                     - sAdv * dt * lamE[..., None, None]*(QDeltaI[k] @ uNodes)                      # --> Advection term
+                    )
 
                 # b has shape [..., nNodes, 1]
-                # P[k] has shape [..., nNodes, nNodes]
+                # PInv[k] has shape [..., nNodes, nNodes]
                 # output has shape [..., nNodes, 1]
-                uNodes = np.linalg.solve(P[..., k, :, :], b)
+                if useInv:
+                    uNodes = PInv[..., k, :, :] @ b
+                else:
+                    uNodes = np.linalg.solve(P[..., k, :, :], b)
 
             uNodes = uNodes[..., :, 0]  # back to shape [..., nNodes]
 
@@ -404,5 +459,120 @@ class DahlquistIMEX():
                 uNum[i+1] = uNum[i]
                 uNum[i+1] += self.dt*np.dot(
                     (self.lamI[..., None] + self.lamE[..., None])*uNodes, weights)
+
+        return uNum
+
+
+    def runSDCStiller(self, Q, nSweeps, sPredictor=1, sCorrector=1, weights=None):
+        r"""
+        Run Stiller's original semi-implicit SDC (SDC-SI) for all
+        :math:`\lambda_I` and :math:`\lambda_E`: classical marching sweeps
+        (subinterval quadrature preconditioner, explicit part evaluated at the
+        left node of each subinterval) with the Lax--Wendroff term
+        :math:`\frac{\theta_m}{2}\lambda_E^2`, :math:`\theta_m=\Delta t_m`,
+        added to the implicit part on BOTH sides of each node equation
+        (Stiller's corrector, eq.~(18) of [Stiller 2025]), so the fixed point
+        stays the collocation solution (order preserved).
+
+        Per time-step, sweep :math:`k` and node :math:`m` (marching over
+        :math:`m`), with :math:`\Delta t_m = q_m\Delta t` and
+        :math:`\iota_m = \lambda_I + \frac{\Delta t_m}{2}\lambda_E^2` :
+
+        * predictor (:math:`k=0`), SI1(sPredictor) stages on the subinterval::
+
+            u^{(s)} = u_{m-1} + \Delta t_m\,\lambda_E\,u^{(s-1)},\quad
+            u^{(s)} = \frac{u^{(s)}}{1-\Delta t_m\iota_m}
+
+          with :math:`u^{(0)}=u_{m-1}` (:math:`u_{-1}=u_0`),
+        * corrector (:math:`k\ge 1`), SI1(sCorrector) stages::
+
+            u^{(1)} = u_{m-1}^{k+1} + S_m^k
+                + \Delta t_m[\lambda_E u_{m-1}^{k+1} + \iota_m u^{(1)}]
+                - \Delta t_m[\lambda_E u_{m-1}^{k} + \iota_m u_m^{k}],
+
+            u^{(2)} = u_{m-1}^{k+1} + S_m^k
+                + \Delta t_m[\lambda_E u^{(1)} + \iota_m u^{(2)}]
+                - \Delta t_m[\lambda_E u_m^{k} + \iota_m u_m^{k}],
+
+          with :math:`S_m^k = \Delta t\sum_i w_{i,m}(\lambda_I+\lambda_E)u_i^k`,
+          :math:`w_{i,m}=\int_{\tau_{m-1}}^{\tau_m}\ell_i(\tau)d\tau`
+          (row :math:`m` of :math:`Q` minus row :math:`m-1`).
+
+        Parameters
+        ----------
+        Q : 2D array-like
+            The collocation :math:`Q` coefficients (rows = quadrature weights
+            :math:`\int_0^{\tau_m}\ell_i`).
+        nSweeps : int
+            Total number of iterations (one predictor + nSweeps-1 correctors).
+        sPredictor : int
+            Number of stages of the predictor integrator SI1 (1 or 2).
+        sCorrector : int
+            Number of stages of the corrector integrator SI1 (1 or 2).
+        weights : 1D array-like or None
+            Quadrature weights for the step update. If None (default), the
+            last node is used (right Radau).
+
+        Returns
+        -------
+        uNum : np.ndarray
+            The solution at each time-steps (+ initial solution).
+        """
+        Q = np.asarray(Q)
+        nNodes = Q.shape[0]
+        nodes = Q.sum(axis=1)
+        qm = np.diff(np.concatenate(([0.0], nodes)))*self.dt   # Delta t_m
+        w = Q - np.vstack([np.zeros((1, nNodes)), Q[:-1]])     # w_{i,m}
+        # per-node implicit eigenvalue with the LW term, shape (..., nNodes)
+        im = self.lamI[..., None] + 0.5*qm*self.lamE[..., None]**2
+        lam = self.lamI + self.lamE
+
+        uNum = np.zeros((self.nSteps+1, *self.uShape), dtype=self.dtype)
+        uNum[0] = self.u0
+
+        for i in range(self.nSteps):
+
+            uNodes = np.ones(nNodes)*uNum[i][..., None]   # shape [..., nNodes]
+
+            for k in range(nSweeps):
+
+                uOld = uNodes
+                uNew = np.zeros_like(uOld)
+
+                for m in range(nNodes):
+
+                    u0step = uNum[i]                        # shape (...)
+                    um1New = uNew[..., m-1] if m > 0 else u0step
+                    um1Old = uOld[..., m-1] if m > 0 else u0step
+                    lamE = self.lamE                        # shape (...)
+                    im_m = im[..., m]                       # shape (...)
+                    denom = 1 - qm[m]*im_m
+
+                    if k == 0:
+                        # predictor: SI1(sPredictor) stages on the subinterval
+                        us = um1New
+                        for s in range(sPredictor):
+                            exArg = um1New if s == 0 else us
+                            us = (um1New + qm[m]*lamE*exArg)/denom
+                        uNew[..., m] = us
+                    else:
+                        # corrector: SI1(sCorrector) stages
+                        S = self.dt*np.einsum(
+                            "j,...j->...", w[m], lam[..., None]*uOld)
+                        us = um1New
+                        for s in range(sCorrector):
+                            exNew = um1New if s == 0 else us
+                            exOld = um1Old if s == 0 else uOld[..., m]
+                            us = (um1New + S + qm[m]*lamE*exNew
+                                  - qm[m]*(lamE*exOld + im_m*uOld[..., m]))/denom
+                        uNew[..., m] = us
+
+                uNodes = uNew
+
+            if weights is None:
+                uNum[i+1] = uNodes[..., -1]
+            else:
+                uNum[i+1] = uNum[i]
+                uNum[i+1] += self.dt*np.dot(lam[..., None]*uNodes, weights)
 
         return uNum

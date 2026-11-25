@@ -148,6 +148,36 @@ class MassMatrixPDE1D(DiffOp):
         else:
             out[:] = self._spluB1.solve(self.R1 @ (cref * self._spluB1.solve(self.R1 @ u)))
 
+    def stabCrefA(self, uRef):
+        """Frozen A_c (first power) coefficient of the S-term; overridden in subclasses."""
+        return np.ones(self.N)
+
+    def evalF_EXA(self, u, out, uRef=None):
+        r"""Linearized advection Jacobian applied to u with frozen A_c:
+        out = -D1eff (cadv * u), i.e. M^{-1} N'(uRef) u (the S-term, both sides)."""
+        cadv = self.stabCrefA(uRef)
+        if self.spaceScheme == "FD":
+            out[:] = -(self.D1 @ (cadv * u))
+        else:
+            out[:] = -self._spluB1.solve(self.R1 @ (cadv * u))
+
+    def fSolve_IM_adv(self, a, sEff, rhs, out, uRef=None):
+        r"""Solve (M - a L + a*sEff * M D1eff diag(cadv)) u = M rhs.
+
+        Adds the S-term (fraction sEff of the advection, frozen Jacobian cadv =
+        A_c(uRef)) to the implicit operator.  Per Fourier mode it adds
+        a*sEff*zE to zI, matching runDahlquistIMEXParStiller with sAdv=sEff*qm
+        (SDC-PA).  `a` is dimensional (subinterval size), sEff dimensionless.
+        """
+        cadv = self.stabCrefA(uRef)
+        A = (self.Mdense - a * self.Ldense
+             + a * sEff * (self.Mdense @ self.D1eff) * cadv[None, :])
+        mrhs = self.Mdense @ rhs
+        try:
+            out[:] = np.linalg.solve(A, mrhs)
+        except np.linalg.LinAlgError:
+            out[:] = np.linalg.lstsq(A, mrhs, rcond=None)[0]
+
     def fSolve_IM_stab(self, a, theta, rhs, out, uRef=None):
         r"""Solve (M - a L - a (theta/2) M D1eff diag(cref) D1eff) u = M rhs.
 
@@ -257,6 +287,10 @@ class AdvectionDiffusion1D(MassMatrixPDE1D):
         # linear advection: A_c = a (constant)
         return np.full(self.N, self.a**2)
 
+    def stabCrefA(self, uRef):
+        # linear advection: A_c = a (constant)
+        return np.full(self.N, self.a)
+
     def exact(self, T):
         """Exact solution at time T for the sine initial condition."""
         kx = 2 * np.pi * self.k / self.L
@@ -282,3 +316,9 @@ class Burgers1D(MassMatrixPDE1D):
         if uRef is None:
             uRef = self.u0
         return uRef**2
+
+    def stabCrefA(self, uRef):
+        # Burgers: A_c = diag(u), frozen at the step state (S-term)
+        if uRef is None:
+            uRef = self.u0
+        return uRef

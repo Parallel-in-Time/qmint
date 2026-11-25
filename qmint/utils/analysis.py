@@ -36,25 +36,7 @@ DIFF_COMPACT = {
 
 def getFourierSymbol(deriv, order, spaceScheme="FD"):
 
-    # Lele compact schemes: rational symbols
-    #   1st deriv: z = i (a sin t + b sin 2t) / (1 + 2 alpha cos t)
-    #   2nd deriv: z = (2a (cos t - 1) + b/2 (cos 2t - 1)) / (1 + 2 alpha cos t)
-    if spaceScheme.upper() in ("COMPACT", "LELE"):
-        table = {1: ADV_COMPACT, 2: DIFF_COMPACT}[deriv]
-        alpha, a, b = table[order]
-
-        def zCompact(theta):
-            theta = np.asarray(theta)
-            denom = 1 + 2*alpha*np.cos(theta)
-            if deriv == 1:
-                return 1j*(a*np.sin(theta) + b*np.sin(2*theta))/denom
-            else:
-                return (2*a*(np.cos(theta)-1)
-                        + 0.5*b*(np.cos(2*theta)-1))/denom + 0j
-
-        return zCompact
-
-    # Exact Fourier symbols
+    # Spectral discretization (exact Fourier symbols)
     if order in [np.inf, -1]:
         if deriv == 1:  # advection
             def z(theta):
@@ -67,7 +49,25 @@ def getFourierSymbol(deriv, order, spaceScheme="FD"):
 
         return z
 
-    # Discrete Fourier symbol
+    # Lele compact schemes: rational symbols
+    #   1st deriv: z = i (a sin t + (b/2) sin 2t) / (1 + 2 alpha cos t)
+    #   2nd deriv: z = (2a (cos t - 1) + (b/2) (cos 2t - 1)) / (1 + 2 alpha cos t)
+    if spaceScheme.upper() in ("COMPACT", "LELE"):
+        table = {1: ADV_COMPACT, 2: DIFF_COMPACT}[deriv]
+        alpha, a, b = table[order]
+
+        def zCompact(theta):
+            theta = np.asarray(theta)
+            denom = 1 + 2*alpha*np.cos(theta)
+            if deriv == 1:
+                return 1j*(a*np.sin(theta) + 0.5*b*np.sin(2*theta))/denom
+            else:
+                return (2*a*(np.cos(theta)-1)
+                        + 0.5*b*(np.cos(2*theta)-1))/denom + 0j
+
+        return zCompact
+
+    # Finite differences: polynomial symbols
     table = {
         1: ADV_COEFFS,
         2: DIFF_COEFFS,
@@ -173,11 +173,21 @@ def runDahlquistIMEXParStiller(lamI, lamE, nNodes=4, nSweeps=4,
 
     Sweep k updates every node m independently (parallel across nodes):
 
-        u_m^{k+1} = u_0 + S_m^k + dt q_m [ phi_im(u_m^{k+1}) - phi_im(u_m^k) ],
+    .. math::
+        u_m^{k+1} = u_0 + S_m^k + \Delta{t} Q_\Delta[m,m] [
+            \phi_{I}(u_m^{k+1}) - \phi_{I}(u_m^k)
+            ],
 
-    with S_m^k = dt sum_i Q[m,i] (lamI+lamE) u_i^k (full Q on the old sweep,
-    available at all nodes simultaneously) and
-    phi_im = (lamI - thetaScale * q_m/2 * Im(lamE)^2) u,  theta_m = q_m * dt.
+    with
+
+    .. math::
+        S_m^k = \Delta{t} \sum_{i=0}^{M-1} Q[m,i] (\lambda_I + \lambda_E) u_i^k
+
+    the Q evaluation on the old sweep, available at all nodes simultaneously and
+
+    .. math::
+        \phi_I = (\lambda_I - \vartheta * Q_\Delta[m,m]/2 * Im(lamE)^2) u,
+        theta_m = q_m * dt.
 
     The theta-term is local to node m, so the block-diagonal structure of the
     parallel sweeps is preserved.  It cancels at the fixed point (collocation
@@ -207,8 +217,8 @@ def runDahlquistIMEXParStiller(lamI, lamE, nNodes=4, nSweeps=4,
     return u[-1]
 
 
-def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False, errorRef=None,
-                     errorMask=None, **params):
+def runDahlquistIMEX(lamI, lamE, scheme:str, stepUpdate=False,
+                     errorRef=None, errorMask=None, **params):
 
     problem = DahlquistIMEX(lamI, lamE)
 

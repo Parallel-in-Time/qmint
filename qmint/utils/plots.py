@@ -29,6 +29,7 @@ def plotAdvDiffStability(stab, cflAdv, meshPeclet, error=None, figName=None, cle
     plt.contour(*coords, stab, levels=[1], colors="black")
     if error is not None:
         plt.contour(*coords, error, levels=[1e-1], colors="black", linestyles=":")
+        plt.contour(*coords, error, levels=[5e-2], colors="black", linestyles="-.")
         plt.contour(*coords, error, levels=[1e-2], colors="black", linestyles="--")
     plt.grid(True)
     plt.xscale('log')

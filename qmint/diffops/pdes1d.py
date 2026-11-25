@@ -68,8 +68,8 @@ def compact_matrices(deriv, order, N):
     alpha, a, b = table[order]
     B = _periodic_stencil(N, [(-1, alpha), (0, 1.0), (1, alpha)])
     if deriv == 1:
-        # R1 f = a (f_{i+1}-f_{i-1})/(2dx) + b (f_{i+2}-f_{i-2})/(2dx); dx folded in by caller
-        R = _periodic_stencil(N, [(-2, -b / 2), (-1, -a / 2), (1, a / 2), (2, b / 2)])
+        # R1 f = a (f_{i+1}-f_{i-1})/(2dx) + b (f_{i+2}-f_{i-2})/(4dx); dx folded in by caller
+        R = _periodic_stencil(N, [(-2, -b / 4), (-1, -a / 2), (1, a / 2), (2, b / 4)])
     else:
         # R2 f = a (f_{i+1}-2f_i+f_{i-1})/dx^2 + b (f_{i+2}-2f_i+f_{i-2})/(4dx^2)
         R = _periodic_stencil(N, [(-2, b / 4), (-1, a), (0, -2 * a - b / 2), (1, a), (2, b / 4)])
